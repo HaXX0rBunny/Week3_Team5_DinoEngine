@@ -20,6 +20,7 @@
 #include "Object/Class.h"
 #include "Core/FEngine.h"
 #include "Component/SubUVComponent.h"
+#include "Component/TextComponent.h"
 
 #include "Serializer/SceneSerializer.h"
 #include <algorithm>
@@ -219,7 +220,6 @@ void UScene::FrustrumCull(const FFrustum& Frustum, TArray<UPrimitiveComponent*>&
 		}
 		for (UActorComponent* Component : Actor->GetComponents())
 		{
-		
 			if (!Component->IsA(UPrimitiveComponent::StaticClass()))
 			{
 				continue;
@@ -229,17 +229,20 @@ void UScene::FrustrumCull(const FFrustum& Frustum, TArray<UPrimitiveComponent*>&
 
 			const bool bIsUUID = PrimitiveComponent->IsA(UUUIDBillboardComponent::StaticClass());
 			const bool bIsSubUV = PrimitiveComponent->IsA(USubUVComponent::StaticClass());
+			const bool bIsText = PrimitiveComponent->IsA(UTextComponent::StaticClass());
 
-			if (PrimitiveComponent->IsA(UUUIDBillboardComponent::StaticClass()))
+			if (bIsUUID)
 			{
 				if (!ShowFlags.HasFlag(EEngineShowFlags::SF_UUID))
 				{
 					continue;
 				}
 			}
-			else if (PrimitiveComponent->IsA(USubUVComponent::StaticClass()))
+			else if (bIsSubUV)
 			{
-				// SubUV??mesh data 체크 불필??
+			}
+			else if (bIsText)
+			{
 			}
 			else
 			{
@@ -247,6 +250,7 @@ void UScene::FrustrumCull(const FFrustum& Frustum, TArray<UPrimitiveComponent*>&
 				{
 					continue;
 				}
+
 				if (!PrimitiveComponent->GetPrimitive() || !PrimitiveComponent->GetPrimitive()->GetMeshData())
 				{
 					continue;
@@ -281,7 +285,7 @@ void UScene::CollectRenderCommands(const FFrustum& Frustum, FRenderCommandQueue&
 
 			FTextRenderCommand TextCmd;
 			TextCmd.Text = UUIDComponent->GetDisplayText();
-			TextCmd.WorldPosition = UUIDComponent->GetTextWorldPosition();
+			TextCmd.WorldMatrix = FMatrix::MakeTranslation(UUIDComponent->GetTextWorldPosition());;
 			TextCmd.WorldScale = UUIDComponent->GetWorldScale();
 			TextCmd.Color = UUIDComponent->GetTextColor();
 

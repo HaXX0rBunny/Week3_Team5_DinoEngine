@@ -11,6 +11,7 @@
 #include "Component/UUIDBillboardComponent.h"
 #include "Component/SubUVComponent.h"
 #include "Core/FEngine.h"
+#include "Component/TextComponent.h"
 
 
 void IViewportClient::Attach(CCore* Core, CRenderer* Renderer)
@@ -98,16 +99,34 @@ void IViewportClient::BuildRenderCommands(CCore* Core, UScene* Scene, const FFru
 
 			FTextRenderCommand TextCmd;
 			TextCmd.Text = UUIDComponent->GetDisplayText();
-			TextCmd.WorldPosition = UUIDComponent->GetTextWorldPosition();
+			TextCmd.WorldMatrix = FMatrix::MakeTranslation(UUIDComponent->GetTextWorldPosition());
 			TextCmd.WorldScale = UUIDComponent->GetWorldScale();
+			TextCmd.bBillboard = true;
 			TextCmd.Color = UUIDComponent->GetTextColor();
 
 			OutQueue.AddTextCommand(TextCmd);
 			continue;
 		}
+
+		if (PrimitiveComponent->IsA(UTextComponent::StaticClass()))
+		{
+			UTextComponent* TextComponent = static_cast<UTextComponent*>(PrimitiveComponent);
+
+			FTextRenderCommand TextCmd;
+			TextCmd.Text = TextComponent->GetText();
+			TextCmd.WorldMatrix = TextComponent->GetWorldTransform();
+			TextCmd.WorldScale = TextComponent->GetBillboardScale();
+			TextCmd.bBillboard = TextComponent->IsBillboard();
+			TextCmd.Color = TextComponent->GetTextColor();
+
+			OutQueue.AddTextCommand(TextCmd);
+			continue;
+		}
+
 		if (PrimitiveComponent->IsA(USubUVComponent::StaticClass()))
 		{
 			USubUVComponent* SubUVComponent = static_cast<USubUVComponent*>(PrimitiveComponent);
+
 			FSubUVRenderCommand SubUVCmd;
 			SubUVCmd.WorldMatrix = SubUVComponent->GetWorldTransform();
 			SubUVCmd.Size = SubUVComponent->GetSize();
