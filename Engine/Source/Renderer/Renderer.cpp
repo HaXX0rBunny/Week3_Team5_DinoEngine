@@ -438,7 +438,7 @@ void CRenderer::ExecuteRenderPass(ERenderLayer InRenderLayer)
 		if (Cmd.Material != CurrentMaterial)
 		{
 			Cmd.Material->Bind(DeviceContext);
-
+			Cmd.Material->BindTextures(DeviceContext);
 			// TODO : 아래 코드 머티리얼 로드 시점으로 옮기기
 			// 우선 머티리얼 로드하는 코드를 Scene 말고 다른 곳으로 옮긴 후에 작업 가능
 			// 여기서부터

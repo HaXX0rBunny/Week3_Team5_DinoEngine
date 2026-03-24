@@ -196,6 +196,32 @@ std::unique_ptr<FDynamicMaterial> FMaterial::CreateDynamicMaterial() const
 	return Dynamic;
 }
 
+void FMaterial::SetTexture(const FString& Name, ID3D11ShaderResourceView* SRV, ID3D11SamplerState* Sampler, int32 Slot)
+{
+	for (auto& Param : TextureParams)
+	{
+		if (Param.Name == Name)
+		{
+			Param.SRV = SRV;
+			Param.Sampler = Sampler;
+			Param.Slot = Slot;
+			return;
+		}
+	}
+	TextureParams.push_back({ Name, Slot, SRV, Sampler });
+}
+
+void FMaterial::BindTextures(ID3D11DeviceContext* Context) const
+{
+	for (const auto& Param : TextureParams)
+	{
+		if (Param.SRV)
+			Context->PSSetShaderResources(Param.Slot, 1, &Param.SRV);
+		if (Param.Sampler)
+			Context->PSSetSamplers(Param.Slot, 1, &Param.Sampler);
+	}
+}
+
 // ─── FDynamicMaterial ───
 
 bool FDynamicMaterial::SetScalarParameter(const FString& ParamName, float Value)

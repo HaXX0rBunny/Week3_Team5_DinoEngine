@@ -69,7 +69,13 @@ struct ENGINE_API FMaterialConstantBuffer
 
 	void Release();
 };
-
+struct FMaterialTextureParam
+{
+	FString Name;
+	int32 Slot = 0;       
+	ID3D11ShaderResourceView* SRV = nullptr;
+	ID3D11SamplerState* Sampler = nullptr;
+};
 // Material: VS/PS 셰이더 조합 + 추가 상수 버퍼 (b2+)
 // 생성 후 파라미터 값 변경 불가 (읽기 전용). 런타임 변경이 필요하면 FDynamicMaterial 사용.
 class ENGINE_API FMaterial
@@ -117,7 +123,9 @@ public:
 
 	// 독립적인 상수 버퍼를 가진 DynamicMaterial 복제본 생성
 	std::unique_ptr<class FDynamicMaterial> CreateDynamicMaterial() const;
-
+	void SetTexture(const FString& Name, ID3D11ShaderResourceView* SRV,
+		ID3D11SamplerState* Sampler, int32 Slot = 0);
+	void BindTextures(ID3D11DeviceContext* Context) const;
 	// 셰이더 바인딩 + Dirty 상수 버퍼 업로드 + 바인딩
 	void Bind(ID3D11DeviceContext* DeviceContext);
 
@@ -131,7 +139,6 @@ protected:
 	// NOTE: GetSortId에서 비트 연산 쓰는 경우 ShaderId가 32bit를 전부 쓰면 안 됨
 	uint32 ShaderId = 0;
 	static inline uint32 NextShaderId = 0;
-
 	FString OriginName;
 	FString InstanceName;
 	std::shared_ptr<FVertexShader> VertexShader;
@@ -143,6 +150,7 @@ protected:
 
 	TArray<FMaterialConstantBuffer> ConstantBuffers;
 	TMap<FString, FMaterialParameterInfo> ParameterMap;
+	TArray<FMaterialTextureParam> TextureParams;
 
 	static constexpr UINT MaterialCBStartSlot = 2; // b0=Frame, b1=Object, b2+=Material
 };

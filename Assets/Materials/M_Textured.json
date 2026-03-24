@@ -1,0 +1,12 @@
+{
+    "Name": "M_Textured",
+    "VertexShader": "Engine/Shaders/VertexShader.hlsl",
+    "PixelShader": "Engine/Shaders/TexturedPixelShader.hlsl",
+    "ConstantBuffers": [
+        {
+            "Parameters": [
+                { "Name": "BaseColor", "Type": "float4", "Value": [1, 1, 1, 1] }
+            ]
+        }
+    ]
+}
