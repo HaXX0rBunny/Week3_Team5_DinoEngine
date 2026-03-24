@@ -24,6 +24,9 @@
 #include "Component/CameraComponent.h"
 #include "Camera/Camera.h"
 #include "Serializer/SceneSerializer.h"
+
+#include "Actor/ObjActor.h"
+
 enum class EFileDialogType
 {
 	Open,
@@ -94,10 +97,68 @@ void CEditorUI::Initialize(CCore* InCore)
 		{
 			if (Core)
 			{
+
 				Core->GetViewportClient()->HandleFileDoubleClick(FilePath);
 			}
 		};
 
+	ContentBrowser.OnFileDragEnd = [this](const FString& DraggingFilePath, const FString& ReleaseDirectory)
+		{
+			if (ContentBrowser.IsHovered())
+			{
+				if (ContentBrowser.IsMouseOnDirectory())
+				{
+					std::filesystem::path Src = DraggingFilePath;
+					std::filesystem::path DstDir = ReleaseDirectory;
+
+					std::filesystem::path Dst = DstDir / Src.filename();
+
+					std::error_code ec;
+
+					if (std::filesystem::exists(Dst))
+					{
+						int Result = MessageBoxA(
+							nullptr,
+							"이미 같은 이름의 파일이 존재합니다.\n덮어쓰시겠습니까?",
+							"Overwrite",
+							MB_YESNO | MB_ICONWARNING
+						);
+
+						if (Result != IDYES)
+						{
+							return; // 취소
+						}
+
+						// 덮어쓰기 위해 기존 파일 삭제
+						std::filesystem::remove(Dst, ec);
+						if (ec)
+						{
+							MessageBoxA(nullptr, ec.message().c_str(), "Delete Failed", MB_OK | MB_ICONERROR);
+							return;
+						}
+					}
+
+					std::filesystem::rename(Src, Dst, ec);
+
+					if (ec)
+					{
+						UE_LOG("Move Failed: %s", ec.message().c_str());
+					}
+					else
+					{
+						UE_LOG("Moved: %s -> %s", Src.string().c_str(), Dst.string().c_str());
+					}
+				}
+			}
+			else if (Viewport.IsHovered())
+			{
+				UE_LOG("Drop On Viewport");			
+				if (Core)
+				{
+					Core->GetViewportClient()->HandleFileDropOnViewport(DraggingFilePath);
+				}
+			}
+		};
 }
 
 void CEditorUI::AttachToRenderer(CRenderer* InRenderer)
@@ -179,10 +240,10 @@ void CEditorUI::AttachToRenderer(CRenderer* InRenderer)
 			{
 				return;
 			}
-
+	
 			AActor* Selected = Core->GetSelectedActor();
 			if (Selected && !Selected->IsPendingDestroy() && Selected->IsVisible()
-				&& Core->GetScene()->GetShowFlags().HasFlag(EEngineShowFlags::SF_Primitives))
+				&& Core->GetViewportClient()->GetShowFlags().HasFlag(EEngineShowFlags::SF_Primitives))
 			{
 				for (UActorComponent* Component : Selected->GetComponents())
 				{
@@ -204,10 +265,6 @@ void CEditorUI::AttachToRenderer(CRenderer* InRenderer)
 
 			const float AxisLength = 10000.0f;
 			const FVector Origin = { 0.0f, 0.0f, 0.0f };
-			Renderer->DrawLine(Origin, { AxisLength, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f });
-			Renderer->DrawLine(Origin, { 0.0f, AxisLength, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			Renderer->DrawLine(Origin, { 0.0f, 0.0f, AxisLength }, { 0.0f, 0.0f, 1.0f, 1.0f });
-			Renderer->ExecuteLineCommands();
 		});
 }
 
@@ -355,7 +412,7 @@ void CEditorUI::Render()
 				{
 					Core->SetSelectedActor(nullptr);
 
-					if (UCameraComponent* Cam = Core->GetScene()->GetActiveCameraComponent())
+					if (UCameraComponent* Cam = Core->GetActiveWorld()->GetActiveCameraComponent())
 					{
 						Cam->GetCamera()->SetPosition({ -5.0f, 0.0f, 2.0f });
 						Cam->GetCamera()->SetRotation(0.f, 0.f);
@@ -364,20 +421,32 @@ void CEditorUI::Render()
 					UE_LOG("New scene created");
 				}
 			}
+
 			if (ImGui::MenuItem("Open Scene"))
 			{
 				if (Core && Core->GetActiveScene())
 				{
-					Core->SetSelectedActor(nullptr);
-					Core->GetScene()->ClearActors();
-
 					FString Path = GetFilePathUsingDialog(EFileDialogType::Open);
 
 					if (!Path.empty())
 					{
-				
-						FSceneSerializer::Load(Core->GetScene(), Path, Core->GetRenderer()->GetDevice());
+						Core->SetSelectedActor(nullptr);
+						Core->GetScene()->ClearActors();
 
+						bool bLoaded = FSceneSerializer::Load(Core->GetScene(), Path, Core->GetRenderer()->GetDevice());
+						if (bLoaded)
+						{
+							UE_LOG("Scene loaded: %s", Path.c_str());
+						}
+						else
+						{
+							MessageBoxA(
+								nullptr,
+								"Scene 정보가 잘못되었습니다.",
+								"Error",
+								MB_OK | MB_ICONWARNING
+							);
+						}
 					}
 				}
 			}
@@ -406,7 +475,7 @@ void CEditorUI::Render()
 	Console.Render();
 	Stat.Render();
 	Outliner.Render(Core);
-	// ContentBrowser.Render();
+	ContentBrowser.Render();
 }
 
 bool CEditorUI::GetViewportMousePosition(int32 WindowMouseX, int32 WindowMouseY, int32& OutViewportX, int32& OutViewportY, int32& OutWidth, int32& OutHeight) const

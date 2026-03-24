@@ -5,7 +5,7 @@
 #include <d3d11.h>
 #include "SceneTypes.h"
 #include "Core/ShowFlags.h"
-
+#include "RenderCollector.h"
 class AActor;
 class CCamera;
 class FFrustum;
@@ -45,30 +45,21 @@ public:
 	bool IsEditorScene() const { return SceneType == ESceneType::Editor; }
 	bool IsGameScene() const { return SceneType == ESceneType::Game || SceneType == ESceneType::PIE; }
 
-	void SetActiveCameraComponent(UCameraComponent* InCameraComponent);
-	UCameraComponent* GetActiveCameraComponent() const;
+  
 	CCamera* GetCamera() const;
 
-	void InitializeEmptyScene(float AspectRatio);
-	void InitializeDefaultScene(float AspectRatio, ID3D11Device* Device = nullptr);
 
 	void ClearActors();
 	void BeginPlay();
 	void Tick(float DeltaTime);
-	void CollectRenderCommands(const FFrustum& Frustum, FRenderCommandQueue& OutQueue);
-	
 
-	FShowFlags& GetShowFlags() { return ShowFlags; }
-	const FShowFlags& GetShowFlags() const { return ShowFlags; }
-	void FrustrumCull(const FFrustum& Frustum, TArray<UPrimitiveComponent*>& OutVisible);
+	
+	
 
 private:
 	TArray<AActor*> Actors;
-	UCameraComponent* SceneCameraComponent = nullptr;
-	TObjectPtr<UCameraComponent> ActiveCameraComponent;
 	bool bBegunPlay = false;
 	ESceneType SceneType = ESceneType::Game;
-	FShowFlags ShowFlags;
 
-	TArray<UPrimitiveComponent*> VisiblePrimitives;
+
 };

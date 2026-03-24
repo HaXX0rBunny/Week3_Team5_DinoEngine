@@ -265,7 +265,7 @@ void CControlPanelWindow::Render(CCore* Core)
 			Core->SetSelectedActor(nullptr);
 		
 			strncpy_s(SceneName, "NewScene", IM_ARRAYSIZE(SceneName));
-			if (UCameraComponent* Cam = Core->GetScene()->GetActiveCameraComponent())
+			if (UCameraComponent* Cam = Core->GetActiveWorld()->GetActiveCameraComponent())
 			{
 				Cam->GetCamera()->SetPosition({ -5.0f, 0.0f, 2.0f });
 				Cam->GetCamera()->SetRotation(0.f,0.f);
@@ -337,17 +337,28 @@ void CControlPanelWindow::Render(CCore* Core)
 
 			if (SelectedSceneIndex >= 0 && ImGui::Button("Load"))
 			{
-				Core->SetSelectedActor(nullptr);
-				Core->GetScene()->ClearActors();
-
 				FString SceneFileName = SceneFiles[SelectedSceneIndex];
 				SceneFileName += ".json";
 				const FString Path = (FPaths::SceneDir() / SceneFileName).string();
 
-		
-				FSceneSerializer::Load(Core->GetScene(), Path, Core->GetRenderer()->GetDevice());
+				Core->SetSelectedActor(nullptr);
+				Core->GetScene()->ClearActors();
 
-				UE_LOG("Scene loaded: %s", SceneFiles[SelectedSceneIndex].c_str());
+				bool bLoaded = FSceneSerializer::Load(Core->GetScene(), Path, Core->GetRenderer()->GetDevice());
+				if (bLoaded)
+				{
+					UE_LOG("Scene loaded: %s", SceneFiles[SelectedSceneIndex].c_str());
+				}
+				else
+				{
+					MessageBoxA(
+						nullptr,
+						"Scene 정보가 잘못되었습니다.",
+						"Error",
+						MB_OK | MB_ICONWARNING
+					);
+				}
+
 			}
 		}
 

@@ -28,6 +28,7 @@
     <ClInclude Include="Source\Actor\AttachTestActor.h" />
     <ClInclude Include="Source\Actor\CubeActor.h" />
     <ClInclude Include="Source\Actor\Gizmo.h" />
+    <ClInclude Include="Source\Actor\ObjActor.h" />
     <ClInclude Include="Source\Actor\PlaneActor.h" />
     <ClInclude Include="Source\Actor\SkySphereActor.h" />
     <ClInclude Include="Source\Actor\SphereActor.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="Source\Component\CubeComponent.h" />
     <ClInclude Include="Source\Component\GizmoComponent.h" />
     <ClInclude Include="Source\Component\LineBatchComponent.h" />
+    <ClInclude Include="Source\Component\ObjComponent.h" />
     <ClInclude Include="Source\Component\PlaneComponent.h" />
     <ClInclude Include="Source\Component\PrimitiveComponent.h" />
     <ClInclude Include="Source\Component\RandomColorComponent.h" />
@@ -53,6 +55,7 @@
     <ClInclude Include="Source\Core\Paths.h" />
     <ClInclude Include="Source\Core\ShowFlags.h" />
     <ClInclude Include="Source\Core\ViewportClient.h" />
+    <ClInclude Include="Source\Debug\DebugDrawManager.h" />
     <ClInclude Include="Source\Debug\EngineLog.h" />
     <ClInclude Include="Source\Input\EnhancedInputManager.h" />
     <ClInclude Include="Source\Input\InputAction.h" />
@@ -84,6 +87,7 @@
     <ClInclude Include="Source\Primitive\PrimitiveBase.h" />
     <ClInclude Include="Source\Primitive\PrimitiveCube.h" />
     <ClInclude Include="Source\Primitive\PrimitiveGizmo.h" />
+    <ClInclude Include="Source\Primitive\PrimitiveObj.h" />
     <ClInclude Include="Source\Primitive\PrimitivePlane.h" />
     <ClInclude Include="Source\Primitive\PrimitiveSky.h" />
     <ClInclude Include="Source\Primitive\PrimitiveSphere.h" />
@@ -104,10 +108,10 @@
     <ClInclude Include="Source\Renderer\SubUVRenderer.h" />
     <ClInclude Include="Source\Renderer\TextRenderer.h" />
     <ClInclude Include="Source\Renderer\TextureVertex.h" />
+    <ClInclude Include="Source\Scene\RenderCollector.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\SceneContext.h" />
     <ClInclude Include="Source\Scene\SceneManager.h" />
-    <ClInclude Include="Source\Scene\SceneRenderCollector.h" />
     <ClInclude Include="Source\Scene\SceneTypes.h" />
     <ClInclude Include="Source\Serializer\Archive.h" />
     <ClInclude Include="Source\Serializer\SceneSerializer.h" />
@@ -133,6 +137,7 @@
     <ClCompile Include="Source\Actor\AttachTestActor.cpp" />
     <ClCompile Include="Source\Actor\CubeActor.cpp" />
     <ClCompile Include="Source\Actor\Gizmo.cpp" />
+    <ClCompile Include="Source\Actor\ObjActor.cpp" />
     <ClCompile Include="Source\Actor\PlaneActor.cpp" />
     <ClCompile Include="Source\Actor\SphereActor.cpp" />
     <ClCompile Include="Source\Actor\SubUVActor.cpp" />
@@ -143,6 +148,7 @@
     <ClCompile Include="Source\Component\CubeComponent.cpp" />
     <ClCompile Include="Source\Component\GizmoComponent.cpp" />
     <ClCompile Include="Source\Component\LineBatchComponent.cpp" />
+    <ClCompile Include="Source\Component\ObjComponent.cpp" />
     <ClCompile Include="Source\Component\PlaneComponent.cpp" />
     <ClCompile Include="Source\Component\PrimitiveComponent.cpp" />
     <ClCompile Include="Source\Component\RandomColorComponent.cpp" />
@@ -159,6 +165,7 @@
     <ClCompile Include="Source\Core\Paths.cpp" />
     <ClCompile Include="Source\Core\ShowFlags.cpp" />
     <ClCompile Include="Source\Core\ViewportClient.cpp" />
+    <ClCompile Include="Source\Debug\DebugDrawManager.cpp" />
     <ClCompile Include="Source\Debug\EngineLog.cpp" />
     <ClCompile Include="Source\Input\EnhancedInputManager.cpp" />
     <ClCompile Include="Source\Input\InputManager.cpp" />
@@ -182,6 +189,7 @@
     <ClCompile Include="Source\Primitive\PrimitiveBase.cpp" />
     <ClCompile Include="Source\Primitive\PrimitiveCube.cpp" />
     <ClCompile Include="Source\Primitive\PrimitiveGizmo.cpp" />
+    <ClCompile Include="Source\Primitive\PrimitiveObj.cpp" />
     <ClCompile Include="Source\Primitive\PrimitivePlane.cpp" />
     <ClCompile Include="Source\Primitive\PrimitiveSky.cpp" />
     <ClCompile Include="Source\Primitive\PrimitiveSphere.cpp" />
@@ -199,9 +207,9 @@
     <ClCompile Include="Source\Renderer\ShaderResource.cpp" />
     <ClCompile Include="Source\Renderer\SubUVRenderer.cpp" />
     <ClCompile Include="Source\Renderer\TextRenderer.cpp" />
+    <ClCompile Include="Source\Scene\RenderCollector.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\SceneManager.cpp" />
-    <ClCompile Include="Source\Scene\SceneRenderCollector.cpp" />
     <ClCompile Include="Source\Serializer\Archive.cpp" />
     <ClCompile Include="Source\Serializer\SceneSerializer.cpp" />
     <ClCompile Include="Source\Types\Name.cpp" />

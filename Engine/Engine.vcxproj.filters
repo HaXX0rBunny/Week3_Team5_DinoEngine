@@ -78,6 +78,9 @@
     <ClCompile Include="Source\Actor\Gizmo.cpp">
       <Filter>Source\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\ObjActor.cpp">
+      <Filter>Source\Actor</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Actor\PlaneActor.cpp">
       <Filter>Source\Actor</Filter>
     </ClCompile>
@@ -103,6 +106,9 @@
       <Filter>Source\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Component\LineBatchComponent.cpp">
+      <Filter>Source\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Component\ObjComponent.cpp">
       <Filter>Source\Component</Filter>
     </ClCompile>
     <ClCompile Include="Source\Component\PlaneComponent.cpp">
@@ -149,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\ViewportClient.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Debug\DebugDrawManager.cpp">
+      <Filter>Source\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Source\Debug\EngineLog.cpp">
       <Filter>Source\Debug</Filter>
@@ -219,6 +228,9 @@
     <ClCompile Include="Source\Primitive\PrimitiveGizmo.cpp">
       <Filter>Source\Primitive</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Primitive\PrimitiveObj.cpp">
+      <Filter>Source\Primitive</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Primitive\PrimitivePlane.cpp">
       <Filter>Source\Primitive</Filter>
     </ClCompile>
@@ -270,13 +282,13 @@
     <ClCompile Include="Source\Renderer\TextRenderer.cpp">
       <Filter>Source\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\RenderCollector.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\SceneManager.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene\SceneRenderCollector.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serializer\Archive.cpp">
@@ -318,6 +330,9 @@
     <ClInclude Include="Source\Actor\Gizmo.h">
       <Filter>Source\Actor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Actor\ObjActor.h">
+      <Filter>Source\Actor</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Actor\PlaneActor.h">
       <Filter>Source\Actor</Filter>
     </ClInclude>
@@ -346,6 +361,9 @@
       <Filter>Source\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Component\LineBatchComponent.h">
+      <Filter>Source\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Component\ObjComponent.h">
       <Filter>Source\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\Component\PlaneComponent.h">
@@ -392,6 +410,9 @@
     </ClInclude>
     <ClInclude Include="Source\Core\ViewportClient.h">
       <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Debug\DebugDrawManager.h">
+      <Filter>Source\Debug</Filter>
     </ClInclude>
     <ClInclude Include="Source\Debug\EngineLog.h">
       <Filter>Source\Debug</Filter>
@@ -486,6 +507,9 @@
     <ClInclude Include="Source\Primitive\PrimitiveGizmo.h">
       <Filter>Source\Primitive</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Primitive\PrimitiveObj.h">
+      <Filter>Source\Primitive</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Primitive\PrimitivePlane.h">
       <Filter>Source\Primitive</Filter>
     </ClInclude>
@@ -546,6 +570,9 @@
     <ClInclude Include="Source\Renderer\TextureVertex.h">
       <Filter>Source\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\RenderCollector.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Scene\Scene.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
@@ -553,9 +580,6 @@
       <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\SceneManager.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene\SceneRenderCollector.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\SceneTypes.h">

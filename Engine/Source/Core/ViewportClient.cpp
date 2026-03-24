@@ -71,88 +71,6 @@ UWorld* IViewportClient::ResolveWorld(CCore* Core) const
 {
 	return Core ? Core->GetActiveWorld() : nullptr;
 }
-void IViewportClient::BuildRenderCommands(CCore* Core, UScene* Scene, const FFrustum& Frustum, FRenderCommandQueue& OutQueue) const
-{
-	if (!Scene)
-	{
-		UE_LOG("[IViewportClient] Cannot find Scene\n");
-		return;
-	}
-
-	if (!ShowFlags.HasFlag(EEngineShowFlags::SF_Primitives))
-	{
-		return;
-	}
-	TArray<UPrimitiveComponent*> VisiblePrimitives;
-	Scene->FrustrumCull(Frustum, VisiblePrimitives);
-
-	for (UPrimitiveComponent* PrimitiveComponent : VisiblePrimitives)
-	{
-		if (!PrimitiveComponent)
-		{
-			continue;
-		}
-		if (PrimitiveComponent->IsA(UUUIDBillboardComponent::StaticClass()))
-		{
-			UUUIDBillboardComponent* UUIDComponent =
-				static_cast<UUUIDBillboardComponent*>(PrimitiveComponent);
-
-			FTextRenderCommand TextCmd;
-			TextCmd.Text = UUIDComponent->GetDisplayText();
-			TextCmd.WorldMatrix = FMatrix::MakeTranslation(UUIDComponent->GetTextWorldPosition());
-			TextCmd.WorldScale = UUIDComponent->GetWorldScale();
-			TextCmd.bBillboard = true;
-			TextCmd.Color = UUIDComponent->GetTextColor();
-
-			OutQueue.AddTextCommand(TextCmd);
-			continue;
-		}
-
-		if (PrimitiveComponent->IsA(UTextComponent::StaticClass()))
-		{
-			UTextComponent* TextComponent = static_cast<UTextComponent*>(PrimitiveComponent);
-
-			FTextRenderCommand TextCmd;
-			TextCmd.Text = TextComponent->GetText();
-			TextCmd.WorldMatrix = TextComponent->GetWorldTransform();
-			TextCmd.WorldScale = TextComponent->GetBillboardScale();
-			TextCmd.bBillboard = TextComponent->IsBillboard();
-			TextCmd.Color = TextComponent->GetTextColor();
-
-			OutQueue.AddTextCommand(TextCmd);
-			continue;
-		}
-
-		if (PrimitiveComponent->IsA(USubUVComponent::StaticClass()))
-		{
-			USubUVComponent* SubUVComponent = static_cast<USubUVComponent*>(PrimitiveComponent);
-
-			FSubUVRenderCommand SubUVCmd;
-			SubUVCmd.WorldMatrix = SubUVComponent->GetWorldTransform();
-			SubUVCmd.Size = SubUVComponent->GetSize();
-			SubUVCmd.Columns = SubUVComponent->GetColumns();
-			SubUVCmd.Rows = SubUVComponent->GetRows();
-			SubUVCmd.TotalFrames = SubUVComponent->GetTotalFrames();
-			SubUVCmd.FPS = SubUVComponent->GetFPS();
-			SubUVCmd.ElapsedTime = static_cast<float>(GEngine->GetCore()->GetTimer().GetTotalTime());
-			SubUVCmd.bLoop = SubUVComponent->IsLoop();
-			SubUVCmd.bBillboard = SubUVComponent->IsBillboard();
-			SubUVCmd.FirstFrame = SubUVComponent->GetFirstFrame();
-			SubUVCmd.LastFrame = SubUVComponent->GetLastFrame();
-
-			OutQueue.AddSubUVCommand(SubUVCmd);
-			continue;
-		}
-
-		if (!PrimitiveComponent->GetPrimitive() || !PrimitiveComponent->GetPrimitive()->GetMeshData())
-		{
-			continue;
-		}
-
-		FRenderCommand Command = BuildRenderCommand(PrimitiveComponent);
-		OutQueue.AddCommand(Command);
-	}
-}
 
 FRenderCommand IViewportClient::BuildRenderCommand(UPrimitiveComponent* PrimitiveComponent) const
 {
@@ -164,7 +82,22 @@ FRenderCommand IViewportClient::BuildRenderCommand(UPrimitiveComponent* Primitiv
 	return Command;
 }
 
+void IViewportClient::BuildRenderCommands(CCore* Core, UScene* Scene, const FFrustum& Frustum, FRenderCommandQueue& OutQueue)
+{
+	UWorld* World = ResolveWorld(Core);
+	if (!World) return;
+
+	// Persistent + Streaming 전체 액터를 렌더
+	TArray<AActor*> AllActors = World->GetAllActors();
+	RenderCollector.CollectRenderCommands(AllActors, Frustum, ShowFlags, OutQueue);
+}
+
 void IViewportClient::HandleFileDoubleClick(const FString& FilePath)
+{
+
+}
+
+void IViewportClient::HandleFileDropOnViewport(const FString& FilePath)
 {
 
 }

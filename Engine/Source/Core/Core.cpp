@@ -12,11 +12,13 @@
 #include "Primitive/PrimitiveBase.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
+#include "Renderer/MaterialManager.h"
 #include "Math/Frustum.h"
 #include "Input/InputManager.h"
 #include "ViewportClient.h"
 #include "Object/ObjectGlobals.h"
-
+#include "Component/UUIDBillboardComponent.h"
+#include "Component/SubUVComponent.h"
 CCore::~CCore()
 {
 	Release();
@@ -35,6 +37,9 @@ bool CCore::Initialize(HWND Hwnd, int32 Width, int32 Height, ESceneType StartupS
 	}
 
 	ObjManager = new ObjectManager();
+
+	// Material
+	FMaterialManager::Get().LoadAllMaterials(Renderer->GetDevice(), Renderer->GetRenderStateManager().get());
 
 	// InputManager
 	InputManager = new CInputManager();
@@ -176,33 +181,33 @@ void CCore::Physics(float DeltaTime)
 				{
 					continue;
 				}
-
+				//discard Billboard subUv
 				UPrimitiveComponent* PrimComp = static_cast<UPrimitiveComponent*>(ActorComp);
+				if (PrimComp->IsA(UUUIDBillboardComponent::StaticClass()) ||
+					PrimComp->IsA(USubUVComponent::StaticClass()))
+					continue;
 
-				if (PrimComp)
-				{
-					FBoxSphereBounds Bound;
-					Bound = PrimComp->GetWorldBounds();
-					Renderer->DrawCube(Bound.Center, Bound.BoxExtent, FVector4(1, 0, 0, 1));
-				}
+				FBoxSphereBounds Bound = PrimComp->GetWorldBounds();
+				DebugDrawManager.DrawCube(Bound.Center, Bound.BoxExtent, FVector4(1, 0, 0, 1));
 			}
+			
 
 			Renderer->DrawCube(HitResult.HitLocation, FVector(0.1, 0.1, 0.1), FVector4(0, 1, 0, 1));
 		}
 
 		if (Renderer)
 		{
-			Renderer->DrawLine(LineStart, LineEnd, FVector4(0, 1, 1, 1));
+			DebugDrawManager.DrawLine(LineStart, LineEnd, FVector4(0, 1, 1, 1));
 		}
 	}
 }
 
 void CCore::GameLogic(float DeltaTime)
 {
-	UScene* Scene = GetActiveScene();
-	if (Scene)
+	UWorld* World = GetActiveWorld();
+	if (World)
 	{
-		Scene->Tick(DeltaTime);
+		World->Tick(DeltaTime);
 	}
 }
 
@@ -231,7 +236,13 @@ void CCore::Render()
 
 	Renderer->BeginFrame();
 
-	UCameraComponent* ActiveCamera = Scene->GetActiveCameraComponent();
+	UWorld* ActiveWorld = GetActiveWorld();
+	if (!ActiveWorld)
+	{
+		Renderer->EndFrame();
+		return;
+	}
+	UCameraComponent* ActiveCamera = ActiveWorld->GetActiveCameraComponent();
 	if (!ActiveCamera)
 	{
 		Renderer->EndFrame();
@@ -258,6 +269,8 @@ void CCore::Render()
 
 	Renderer->SubmitCommands(CommandQueue);
 	Renderer->ExecuteCommands();
+	const FShowFlags& ShowFlags = ViewportClient ? ViewportClient->GetShowFlags() : FShowFlags();
+	DebugDrawManager.Flush(Renderer.get(), ShowFlags, ActiveWorld);
 	Renderer->EndFrame();
 }
 

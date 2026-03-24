@@ -16,6 +16,7 @@
 #include "Component/PrimitiveComponent.h"
 #include "Core/Paths.h"
 #include "imgui.h"
+#include "Actor/ObjActor.h"
 
 CEditorViewportClient::CEditorViewportClient(CEditorUI& InEditorUI, CWindow* InMainWindow)
 	: EditorUI(InEditorUI)
@@ -34,13 +35,8 @@ void CEditorViewportClient::Attach(CCore* Core, CRenderer* Renderer)
 	EditorUI.SetupWindow(MainWindow);
 	EditorUI.AttachToRenderer(Renderer);
 
-	// Wireframe 모드를 위한 머티리얼 생성
-	const auto AbsolutePath = FPaths::ProjectRoot() / WireframeMaterialPath;
-	WireFrameMaterial = FMaterialManager::Get().GetOrLoad(Renderer->GetDevice(), AbsolutePath.string());
-	FRasterizerStateOption rasterizerOption;
-	rasterizerOption.FillMode = D3D11_FILL_WIREFRAME;
-	auto RasterizerState = Renderer->GetRenderStateManager()->GetOrCreateRenderState(rasterizerOption);
-	WireFrameMaterial->SetRasterizerState(RasterizerState);
+	// Wireframe 모드를 위한 머티리얼 가져와서 보관
+	WireFrameMaterial = FMaterialManager::Get().FindByName(WireframeMaterialName);
 }
 
 void CEditorViewportClient::Detach(CCore* Core, CRenderer* Renderer)
@@ -92,17 +88,13 @@ void CEditorViewportClient::HandleMessage(CCore* Core, HWND Hwnd, UINT Msg, WPAR
 		return;
 	}
 
-	int32 MouseX = 0;
-	int32 MouseY = 0;
-	int32 Width = 0;
-	int32 Height = 0;
 	const bool bHasViewportMouse = EditorUI.GetViewportMousePosition(
 		static_cast<int32>(static_cast<short>(LOWORD(LParam))),
 		static_cast<int32>(static_cast<short>(HIWORD(LParam))),
-		MouseX,
-		MouseY,
-		Width,
-		Height);
+		ScreenMouseX,
+		ScreenMouseY,
+		ScreenWidth,
+		ScreenHeight);
 
 	const bool bRightMouseDown = Core->GetInputManager() &&
 		Core->GetInputManager()->IsMouseButtonDown(CInputManager::MOUSE_RIGHT);
@@ -144,12 +136,12 @@ void CEditorViewportClient::HandleMessage(CCore* Core, HWND Hwnd, UINT Msg, WPAR
 			return;
 		}
 
-		if (SelectedActor && Gizmo.BeginDrag(SelectedActor, Scene, Picker, MouseX, MouseY, Width, Height))
+		if (SelectedActor && Gizmo.BeginDrag(SelectedActor, Scene, Picker, ScreenMouseX, ScreenMouseY, ScreenWidth, ScreenHeight))
 		{
 			return;
 		}
 
-		if (AActor* PickedActor = Picker.PickActor(Scene, MouseX, MouseY, Width, Height))
+		if (AActor* PickedActor = Picker.PickActor(Scene, ScreenMouseX, ScreenMouseY, ScreenWidth, ScreenHeight))
 		{
 			Core->SetSelectedActor(PickedActor);
 			EditorUI.SyncSelectedActorProperty();
@@ -165,11 +157,11 @@ void CEditorViewportClient::HandleMessage(CCore* Core, HWND Hwnd, UINT Msg, WPAR
 
 		if (!Gizmo.IsDragging())
 		{
-			Gizmo.UpdateHover(SelectedActor, Scene, Picker, MouseX, MouseY, Width, Height);
+			Gizmo.UpdateHover(SelectedActor, Scene, Picker, ScreenMouseX, ScreenMouseY, ScreenWidth, ScreenHeight);
 			return;
 		}
 
-		if (Gizmo.UpdateDrag(SelectedActor, Scene, Picker, MouseX, MouseY, Width, Height))
+		if (Gizmo.UpdateDrag(SelectedActor, Scene, Picker, ScreenMouseX, ScreenMouseY, ScreenWidth, ScreenHeight))
 		{
 			EditorUI.SyncSelectedActorProperty();
 		}
@@ -181,7 +173,7 @@ void CEditorViewportClient::HandleMessage(CCore* Core, HWND Hwnd, UINT Msg, WPAR
 			Gizmo.EndDrag();
 			if (bHasViewportMouse)
 			{
-				Gizmo.UpdateHover(SelectedActor, Scene, Picker, MouseX, MouseY, Width, Height);
+				Gizmo.UpdateHover(SelectedActor, Scene, Picker, ScreenMouseX, ScreenMouseY, ScreenWidth, ScreenHeight);
 			}
 			else
 			{
@@ -196,17 +188,6 @@ void CEditorViewportClient::HandleMessage(CCore* Core, HWND Hwnd, UINT Msg, WPAR
 	}
 }
 
-void CEditorViewportClient::BuildRenderCommands(CCore* Core, UScene* Scene, const FFrustum& Frustum, FRenderCommandQueue& OutQueue) const
-{
-	IViewportClient::BuildRenderCommands(Core, Scene, Frustum, OutQueue);
-
-	if (!Core || !Scene || !Scene->GetCamera())
-	{
-		return;
-	}
-
-	Gizmo.BuildRenderCommands(Core->GetSelectedActor(), Scene->GetCamera(), OutQueue);
-}
 
 FRenderCommand CEditorViewportClient::BuildRenderCommand(UPrimitiveComponent* PrimitiveComponent) const
 {
@@ -234,10 +215,58 @@ void CEditorViewportClient::HandleFileDoubleClick(const FString& FilePath)
 
 	if (Core)
 	{
-		Core->SetSelectedActor(nullptr);
-		Core->GetScene()->ClearActors();
-		FSceneSerializer::Load(Core->GetScene(), FilePath, Core->GetRenderer()->GetDevice());
+		if (FilePath.ends_with(".json"))
+		{
+			Core->SetSelectedActor(nullptr);
+			Core->GetScene()->ClearActors();
+			bool bLoaded = FSceneSerializer::Load(Core->GetScene(), FilePath, Core->GetRenderer()->GetDevice());
 
-		UE_LOG("Scene loaded: %s", FilePath.c_str());
+			if (bLoaded)
+			{
+				UE_LOG("Scene loaded: %s", FilePath.c_str());
+			}			
+			else
+			{
+				MessageBoxA(
+
+					nullptr,
+					"Scene 정보가 잘못되었습니다.",
+					"Error",
+					MB_OK | MB_ICONWARNING
+				);
+			}
+		}
 	}
+}
+
+void CEditorViewportClient::HandleFileDropOnViewport(const FString& FilePath)
+{
+	CCore* Core = EditorUI.GetCore();
+
+	if (Core)
+	{
+		if (FilePath.ends_with(".obj"))
+		{
+			const FRay Ray = Picker.ScreenToRay(Core->GetScene()->GetCamera(), ScreenMouseX, ScreenMouseY, ScreenWidth, ScreenHeight);
+
+			AObjActor* NewActor = Core->GetScene()->SpawnActor<AObjActor>("ObjActor");
+			NewActor->LoadObj(FilePath);
+			FVector V = Ray.Origin + Ray.Direction * 5;
+			NewActor->SetActorLocation(V);
+
+
+		}
+	}
+}
+
+void CEditorViewportClient::BuildRenderCommands(CCore* Core, UScene* Scene,
+	const FFrustum& Frustum, FRenderCommandQueue& OutQueue)
+{
+	IViewportClient::BuildRenderCommands(Core, Scene, Frustum, OutQueue);  // non-const 부모 호출
+
+	if (!Core || !Scene || !Scene->GetCamera())
+	{
+		return;
+	}
+	Gizmo.BuildRenderCommands(Core->GetSelectedActor(), Scene->GetCamera(), OutQueue);
 }
