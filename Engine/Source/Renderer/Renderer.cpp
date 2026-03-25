@@ -407,7 +407,7 @@ void CRenderer::ExecuteRenderPass(ERenderLayer InRenderLayer)
 			else
 			{
 				// SRV 는 일반 Material 안에서 bind
-				DeviceContext->PSSetSamplers(0, 1, &NormalSampler);
+				DeviceContext->PSSetSamplers(2, 1, &NormalSampler);
 			}
 		}
 

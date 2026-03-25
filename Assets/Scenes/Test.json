@@ -1,0 +1,92 @@
+{
+  "Camera": {
+    "Position": [
+      -7.897059440612793,
+      3.583289861679077,
+      2.608096122741699
+    ],
+    "Rotation": [
+      -9.399995803833008,
+      -15.799989700317383
+    ]
+  },
+  "Materials": [
+    "Assets/Materials/M_TintYellow.json",
+    "Assets/Materials/M_BlueColor.json",
+    "Assets/Materials/M_Sky.json",
+    "Assets/Materials/M_Gizmos.json",
+    "Assets/Materials/M_RedColor.json",
+    "Assets/Materials/M_GreenColor.json",
+    "Assets/Materials/M_Wireframe.json"
+  ],
+  "NextUUID": 20,
+  "Primitives": {
+    "0": {
+      "Billboard": true,
+      "Class": "AObjActor",
+      "ComponentUUIDs": [
+        14,
+        15,
+        16
+      ],
+      "Location": [
+        -0.1676802635192871,
+        -0.7446860074996948,
+        0.9539960622787476
+      ],
+      "Material": "M_Default_Texture",
+      "PrimitiveFileName": "C:\\jungle-techlab-week3-team5\\Assets\\Meshes\\Cat.obj",
+      "Rotation": [
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "Scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "Text": "Text",
+      "TextColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "UUID": 13
+    },
+    "1": {
+      "Billboard": true,
+      "Class": "AObjActor",
+      "ComponentUUIDs": [
+        18,
+        19,
+        20
+      ],
+      "Location": [
+        -2.0691795349121094,
+        3.3094987869262695,
+        -0.40452003479003906
+      ],
+      "PrimitiveFileName": "C:\\jungle-techlab-week3-team5\\Assets\\Meshes\\Cat_No_Texture.obj",
+      "Rotation": [
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "Scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "Text": "Text",
+      "TextColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "UUID": 17
+    }
+  }
+}

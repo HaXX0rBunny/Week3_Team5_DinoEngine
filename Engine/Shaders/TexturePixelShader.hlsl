@@ -1,7 +1,7 @@
 #include "ShaderCommon.hlsli"
 
-Texture2D Texture : register(t0);
-SamplerState Sampler : register(s0);
+Texture2D Texture : register(t2);
+SamplerState Sampler : register(s2);
 
 // Material 상수 버퍼 (b2)
 cbuffer MaterialData : register(b2)

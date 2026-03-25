@@ -25,7 +25,7 @@ void FMaterialTexture::Release()
 
 void FMaterialTexture::Bind(ID3D11DeviceContext* DeviceContext)
 {
-	DeviceContext->PSSetShaderResources(0, 1, &TextureSRV);
+	DeviceContext->PSSetShaderResources(2, 1, &TextureSRV);
 }
 
 // ─── FMaterialConstantBuffer ───
