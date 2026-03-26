@@ -208,7 +208,7 @@ void CControlPanelWindow::Render(CCore* Core)
 		{
 			UScene* Scene = Core->GetScene();
 			static int32 SpawnCount = 0;
-			const FString Name = FString(SpawnTypes[SpawnTypeIndex]) + "_Spawned_" + std::to_string(SpawnCount++);
+			const FString Name = SpawnTypes[SpawnTypeIndex] ;
 
 			AActor* NewActor = nullptr;
 			if (SpawnTypeIndex == 0)
@@ -234,21 +234,11 @@ void CControlPanelWindow::Render(CCore* Core)
 			else if (SpawnTypeIndex == 5)
 			{
 				NewActor = Scene->SpawnActor<ATextActor>(Name);
-
 				if (NewActor)
 				{
 					ATextActor* TextActor = static_cast<ATextActor*>(NewActor);
-					if (UTextComponent* TextComponent = TextActor->GetTextComponent())
-					{
-						if (SpawnTextBuffer[0] != '\0')
-						{
-							TextComponent->SetText(SpawnTextBuffer);
-						}
-						else
-						{
-							TextComponent->SetText("Text");
-						}
-					}
+					if (UTextComponent* TC = TextActor->GetTextComponent())
+						TC->SetText(SpawnTextBuffer[0] != '\0' ? SpawnTextBuffer : "Text");
 				}
 			}
 			else if (SpawnTypeIndex == 6)
