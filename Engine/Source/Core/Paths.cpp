@@ -78,7 +78,7 @@ std::string FPaths::ToAbsolutePath(const FString& Path)
 		return Path;
 	}
 	else
-		AbsolutePath = Root + Path;
+		AbsolutePath = (ProjectRoot() / Path).string();
 
 	return AbsolutePath;
 }
