@@ -43,7 +43,7 @@ bool FEngine::Initialize(HINSTANCE hInstance, const wchar_t* Title, int32 Width,
 	ViewportClient = CreateViewportClient();
 	Core->SetViewportClient(ViewportClient.get());
 
-	PostInitialize();
+	PostInitialize  ();
 
 	App->AddMessageFilter(std::bind(&FEngine::OnInput, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 	App->SetOnResizeCallback(std::bind(&FEngine::OnResize, this, std::placeholders::_1, std::placeholders::_2));

@@ -207,7 +207,7 @@ void CControlPanelWindow::Render(CCore* Core)
 		if (ImGui::Button("Spawn"))
 		{
 			UScene* Scene = Core->GetScene();
-			static int32 SpawnCount = 0;
+
 			const FString Name = SpawnTypes[SpawnTypeIndex] ;
 
 			AActor* NewActor = nullptr;

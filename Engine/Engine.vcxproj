@@ -20,7 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrimitiveLineBatch.h" />
+    <ClInclude Include="Source\Actor\StaticMeshActor.h" />
     <ClInclude Include="Source\Actor\TextActor.h" />
+    <ClInclude Include="Source\Component\MeshComponent.h" />
+    <ClInclude Include="Source\Component\StaticMeshComponent.h" />
     <ClInclude Include="Source\Component\TextComponent.h" />
     <ClInclude Include="Source\CoreMinimal.h" />
     <ClInclude Include="Source\EngineAPI.h" />
@@ -71,6 +74,8 @@
     <ClInclude Include="Source\Math\Vector2.h" />
     <ClInclude Include="Source\Math\Vector4.h" />
     <ClInclude Include="Source\Memory\MemoryBase.h" />
+    <ClInclude Include="Source\Mesh\Mesh.h" />
+    <ClInclude Include="Source\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Object\Class.h" />
     <ClInclude Include="Source\Object\Object.h" />
     <ClInclude Include="Source\Object\ObjectFactory.h" />
@@ -174,6 +179,8 @@
     <ClCompile Include="Source\Math\Transform.cpp" />
     <ClCompile Include="Source\Math\Vector.cpp" />
     <ClCompile Include="Source\Memory\MemoryBase.cpp" />
+    <ClCompile Include="Source\Mesh\Mesh.cpp" />
+    <ClCompile Include="Source\Mesh\StaticMesh.cpp" />
     <ClCompile Include="Source\Object\Class.cpp" />
     <ClCompile Include="Source\Object\Object.cpp" />
     <ClCompile Include="Source\Object\ObjectFactory.cpp" />

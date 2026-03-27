@@ -64,6 +64,9 @@
     <Filter Include="ThirdParty\nlohmann">
       <UniqueIdentifier>{c70e54eb-75c7-d408-4bdc-b003f49af18a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Mesh">
+      <UniqueIdentifier>{ebbb228a-ad01-45af-a17d-1b576538d89f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Actor\Actor.cpp">
@@ -305,6 +308,8 @@
       <Filter>Source\Actor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Actor\SkySphereActor.cpp" />
+    <ClCompile Include="Source\Mesh\Mesh.cpp" />
+    <ClCompile Include="Source\Mesh\StaticMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CoreMinimal.h">
@@ -632,6 +637,11 @@
     <ClInclude Include="Source\Actor\TextActor.h">
       <Filter>Source\Actor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Mesh\Mesh.h" />
+    <ClInclude Include="Source\Mesh\StaticMesh.h" />
+    <ClInclude Include="Source\Component\MeshComponent.h" />
+    <ClInclude Include="Source\Component\StaticMeshComponent.h" />
+    <ClInclude Include="Source\Actor\StaticMeshActor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -425,7 +425,7 @@ void CRenderer::ExecuteRenderPass(ERenderLayer InRenderLayer)
 		}
 
 		UpdateObjectConstantBuffer(Cmd.WorldMatrix);
-		
+		//Todo Section Rendering
 		if (!Cmd.MeshData->Indices.empty())
 			DeviceContext->DrawIndexed(static_cast<UINT>(Cmd.MeshData->Indices.size()), 0, 0);
 		else if (!Cmd.MeshData->Vertices.empty())

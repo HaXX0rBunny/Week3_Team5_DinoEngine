@@ -31,7 +31,7 @@ UObject* FObjectFactory::ConstructObject(
 			FinalName = InName + "_" + std::to_string(Suffix++);
 		}
 	}
-	UObject* NewObj = InClass->CreateInstance(InOuter, InName);
+	UObject* NewObj = InClass->CreateInstance(InOuter, FinalName);
 	if (!NewObj)
 	{
 		return nullptr;
