@@ -2,7 +2,7 @@
 
 #include "Core/Paths.h"
 #include "Core/ConsoleVariableManager.h"
-#include "Scene/Scene.h"
+#include "World/Level.h"
 #include "Actor/Actor.h"
 #include "Input/EnhancedInputManager.h"
 #include "Component/CameraComponent.h"
@@ -20,18 +20,18 @@
 #include "Component/UUIDBillboardComponent.h"
 #include "Component/SubUVComponent.h"
 #include "Actor/SkySphereActor.h"
-CCore::~CCore()
+FCore::~FCore()
 {
 	Release();
 }
 
-bool CCore::Initialize(HWND Hwnd, int32 Width, int32 Height, ESceneType StartupSceneType)
+bool FCore::Initialize(HWND Hwnd, int32 Width, int32 Height, ELevelType StartupLevelType)
 {
 	FPaths::Initialize();
 	WindowWidth = Width;
 	WindowHeight = Height;
 
-	Renderer = std::make_unique<CRenderer>(Hwnd, Width, Height);
+	Renderer = std::make_unique<FRenderer>(Hwnd, Width, Height);
 	if (!Renderer)
 	{
 		return false;
@@ -43,17 +43,17 @@ bool CCore::Initialize(HWND Hwnd, int32 Width, int32 Height, ESceneType StartupS
 	FMaterialManager::Get().LoadAllMaterials(Renderer->GetDevice(), Renderer->GetRenderStateManager().get());
 
 	// InputManager
-	InputManager = new CInputManager();
-	EnhancedInput = new CEnhancedInputManager();
+	InputManager = new FInputManager();
+	EnhancedInput = new FEnhancedInputManager();
 
-	PhysicsManager = std::make_unique<CPhysicsManager>();
+	PhysicsManager = std::make_unique<FPhysicsManager>();
 
 	// Timer
 	Timer.Initialize();
 	RegisterConsoleVariables();
-	SceneManager = std::make_unique<FSceneManager>();
+	LevelManager = std::make_unique<FLevelManager>();
 	const float AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
-	if (!SceneManager->Initialize(AspectRatio, StartupSceneType, Renderer.get()))
+	if (!LevelManager->Initialize(AspectRatio, StartupLevelType, Renderer.get()))
 	{
 		return false;
 	}
@@ -63,7 +63,7 @@ bool CCore::Initialize(HWND Hwnd, int32 Width, int32 Height, ESceneType StartupS
 
 
 
-void CCore::SetViewportClient(IViewportClient* InViewportClient)
+void FCore::SetViewportClient(FViewportClient* InViewportClient)
 {
 	if (ViewportClient == InViewportClient)
 	{
@@ -83,7 +83,7 @@ void CCore::SetViewportClient(IViewportClient* InViewportClient)
 	}
 }
 
-void CCore::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
+void FCore::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 {
 	if (InputManager)
 	{
@@ -96,20 +96,20 @@ void CCore::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 	}
 }
 
-void CCore::Release()
+void FCore::Release()
 {
 	if (ViewportClient && Renderer)
 	{
 		ViewportClient->Detach(this, Renderer.get());
 	}
 	ViewportClient = nullptr;
-	if (SceneManager)
+	if (LevelManager)
 	{
-		SceneManager->Release();
-		SceneManager.reset();
+		LevelManager->Release();
+		LevelManager.reset();
 	}
 
-	// Scene 해제 후 PendingKill 오브젝트를 GC로 정리
+	// Level 해제 후 PendingKill 오브젝트를 GC로 정리
 	if (ObjManager)
 	{
 		ObjManager->FlushKilledObjects();
@@ -130,13 +130,13 @@ void CCore::Release()
 	}
 }
 
-void CCore::Tick()
+void FCore::Tick()
 {
 	Timer.Tick();
 	Tick(Timer.GetDeltaTime());
 }
 
-void CCore::Tick(const float DeltaTime)
+void FCore::Tick(const float DeltaTime)
 {
 	Input(DeltaTime);
 	Physics(DeltaTime);
@@ -145,7 +145,7 @@ void CCore::Tick(const float DeltaTime)
 	LateUpdate(DeltaTime);
 }
 
-void CCore::Input(float DeltaTime)
+void FCore::Input(float DeltaTime)
 {
 	if (InputManager)
 	{
@@ -163,16 +163,16 @@ void CCore::Input(float DeltaTime)
 	}
 }
 
-void CCore::Physics(float DeltaTime)
+void FCore::Physics(float DeltaTime)
 {
-	UScene* Scene = ViewportClient ? ViewportClient->ResolveScene(this) : GetActiveScene();
+	ULevel* Level = ViewportClient ? ViewportClient->ResolveLevel(this) : GetActiveLevel();
 	
-	if (Scene)
+	if (Level)
 	{
 		FVector LineStart(2, 2, 0), LineEnd(5, 5, 0);
 		FHitResult HitResult;
 
-		bool bHit = PhysicsManager->Linetrace(Scene, LineStart, LineEnd, HitResult);
+		bool bHit = PhysicsManager->Linetrace(Level, LineStart, LineEnd, HitResult);
 
 		if (bHit)
 		{
@@ -210,7 +210,7 @@ void CCore::Physics(float DeltaTime)
 	}
 }
 
-void CCore::GameLogic(float DeltaTime)
+void FCore::GameLogic(float DeltaTime)
 {
 	UWorld* World = GetActiveWorld();
 	if (World)
@@ -219,7 +219,7 @@ void CCore::GameLogic(float DeltaTime)
 	}
 }
 
-void CCore::LateUpdate(float DeltaTime)
+void FCore::LateUpdate(float DeltaTime)
 {
 	if (GCInterval <= 0.0)
 	{
@@ -234,10 +234,10 @@ void CCore::LateUpdate(float DeltaTime)
 	}
 }
 
-void CCore::Render()
+void FCore::Render()
 {
-	UScene* Scene = ViewportClient ? ViewportClient->ResolveScene(this) : GetActiveScene();
-	if (!Renderer || !Scene || Renderer->IsOccluded())
+	ULevel* Level = ViewportClient ? ViewportClient->ResolveLevel(this) : GetActiveLevel();
+	if (!Renderer || !Level || Renderer->IsOccluded())
 	{
 		return;
 	}
@@ -268,11 +268,11 @@ void CCore::Render()
 
 	if (ViewportClient)
 	{
-		ViewportClient->BuildRenderCommands(this, Scene, Frustum, CommandQueue);
+		ViewportClient->BuildRenderCommands(this, Level, Frustum, CommandQueue);
 	}
 	else
 	{
-		// Scene->CollectRenderCommands(Frustum, CommandQueue);
+		// Level->CollectRenderCommands(Frustum, CommandQueue);
 	}
 
 	Renderer->SubmitCommands(CommandQueue);
@@ -282,16 +282,16 @@ void CCore::Render()
 	Renderer->EndFrame();
 }
 
-void CCore::OnResize(int32 Width, int32 Height)
+void FCore::OnResize(int32 Width, int32 Height)
 {
 	if (Width == 0 || Height == 0) return;
 	WindowWidth = Width;
 	WindowHeight = Height;
 	if (Renderer) Renderer->OnResize(Width, Height);
-	if (SceneManager) SceneManager->OnResize(Width, Height);
+	if (LevelManager) LevelManager->OnResize(Width, Height);
 }
 
-void CCore::RegisterConsoleVariables()
+void FCore::RegisterConsoleVariables()
 {
 	FConsoleVariableManager& CVM = FConsoleVariableManager::Get();
 

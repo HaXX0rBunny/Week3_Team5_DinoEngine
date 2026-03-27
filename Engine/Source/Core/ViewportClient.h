@@ -5,41 +5,41 @@
 #include "Types/String.h"
 #include "ShowFlags.h"
 #include "Renderer/RenderCommand.h"
-#include "Scene/RenderCollector.h"
+#include "World/RenderCollector.h"
 
-class CCore;
-class CRenderer;
-class UScene;
+class FCore;
+class FRenderer;
+class ULevel;
 class FFrustum;
 class UPrimitiveComponent;
 struct FRenderCommandQueue;
 class UWorld;
-class ENGINE_API IViewportClient
+class ENGINE_API FViewportClient
 {
 public:
-	virtual ~IViewportClient() = default;
+	virtual ~FViewportClient() = default;
 
-	virtual void Attach(CCore* Core, CRenderer* Renderer);
-	virtual void Detach(CCore* Core, CRenderer* Renderer);
-	virtual void Tick(CCore* Core, float DeltaTime);
-	virtual void HandleMessage(CCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam);
-	virtual UScene* ResolveScene(CCore* Core) const;
-	virtual UWorld* ResolveWorld(CCore* Core) const;
+	virtual void Attach(FCore* Core, FRenderer* Renderer);
+	virtual void Detach(FCore* Core, FRenderer* Renderer);
+	virtual void Tick(FCore* Core, float DeltaTime);
+	virtual void HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam);
+	virtual ULevel* ResolveLevel(FCore* Core) const;
+	virtual UWorld* ResolveWorld(FCore* Core) const;
 	FShowFlags& GetShowFlags() { return ShowFlags; }
 	const FShowFlags& GetShowFlags() const { return ShowFlags; }
-	virtual void BuildRenderCommands(CCore* Core, UScene* Scene,
+	virtual void BuildRenderCommands(FCore* Core, ULevel* Level,
 		const FFrustum& Frustum, FRenderCommandQueue& OutQueue);
 	/** 입력 처리는 원래 Viewport 에서 처리하는게 맞는데 구조상 여기다 넣음 */
 	virtual void HandleFileDoubleClick(const FString& FilePath);
 	virtual void HandleFileDropOnViewport(const FString& FilePath);
 protected:
 	FShowFlags ShowFlags;
-	FSceneRenderCollector RenderCollector;
+	FLevelRenderCollector RenderCollector;
 };
 
-class ENGINE_API CGameViewportClient : public IViewportClient
+class ENGINE_API FGameViewportClient : public FViewportClient
 {
 public:
-	void Attach(CCore* Core, CRenderer* Renderer) override;
-	void Detach(CCore* Core, CRenderer* Renderer) override;
+	void Attach(FCore* Core, FRenderer* Renderer) override;
+	void Detach(FCore* Core, FRenderer* Renderer) override;
 };

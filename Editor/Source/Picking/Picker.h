@@ -4,8 +4,8 @@
 #include "Math/Matrix.h"
 
 class AActor;
-class UScene;
-class CCamera;
+class ULevel;
+class FCamera;
 
 struct FRay
 {
@@ -13,11 +13,11 @@ struct FRay
     FVector Direction;
 };
 
-class CPicker
+class FPicker
 {
 public:
     // 스크린 좌표 → 월드 레이 변환 (Deprojection)
-    FRay ScreenToRay(const CCamera* Camera, int32 ScreenX, int32 ScreenY, int32 ScreenWidth, int32 ScreenHeight) const;
+    FRay ScreenToRay(const FCamera* Camera, int32 ScreenX, int32 ScreenY, int32 ScreenWidth, int32 ScreenHeight) const;
 
     // Möller–Trumbore 알고리즘: 레이-삼각형 교차 검사
     bool RayTriangleIntersect(const FRay& Ray,
@@ -25,6 +25,6 @@ public:
                               float& OutDistance) const;
 
     // 씬의 모든 Actor를 대상으로 피킹 (가장 가까운 Actor 반환)
-    AActor* PickActor(UScene* Scene, int32 ScreenX, int32 ScreenY,
+    AActor* PickActor(ULevel* Level, int32 ScreenX, int32 ScreenY,
                       int32 ScreenWidth, int32 ScreenHeight) const;
 };

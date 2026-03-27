@@ -10,17 +10,17 @@
 #include "Renderer/SubUVRenderer.h"
 #include "Renderer/Material.h"
 
-void FSceneRenderCollector::CollectRenderCommands(const TArray<AActor*>& Actors, const FFrustum& Frustum,
+void FLevelRenderCollector::CollectRenderCommands(const TArray<AActor*>& Actors, const FFrustum& Frustum,
 	const FShowFlags& ShowFlags, FRenderCommandQueue& OutQueue)
 {
 	TArray<UPrimitiveComponent*> VisiblePrimitives;
 	FrustrumCull(Actors, Frustum, ShowFlags, VisiblePrimitives);
 
-	CRenderer* Renderer = GEngine->GetCore()->GetRenderer();
+	FRenderer* Renderer = GEngine->GetCore()->GetRenderer();
 	if (!Renderer) return;
 
-	CTextMeshBuilder& TextRenderer = Renderer->GetTextRenderer();
-	CSubUVRenderer& SubUVRenderer = Renderer->GetSubUVRenderer();
+	FTextMeshBuilder& TextRenderer = Renderer->GetTextRenderer();
+	FSubUVRenderer& SubUVRenderer = Renderer->GetSubUVRenderer();
 
 	for (UPrimitiveComponent* PrimitiveComponent : VisiblePrimitives)
 	{
@@ -127,7 +127,7 @@ void FSceneRenderCollector::CollectRenderCommands(const TArray<AActor*>& Actors,
 	}
 }
 
-void FSceneRenderCollector::FrustrumCull(const TArray<AActor*>& Actors, const FFrustum& Frustum,
+void FLevelRenderCollector::FrustrumCull(const TArray<AActor*>& Actors, const FFrustum& Frustum,
 	const FShowFlags& ShowFlags, TArray<UPrimitiveComponent*>& OutVisible)
 {
 	for (AActor* Actor : Actors)
