@@ -171,7 +171,17 @@ bool FRenderer::Initialize(HWND InHwnd, int32 Width, int32 Height)
 
 	if (!CreateConstantBuffers()) return false;
 	SetConstantBuffers();
-
+	{
+		D3D11_SAMPLER_DESC SamplerDesc = {};
+		SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		SamplerDesc.MinLOD = 0;
+		SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		if (FAILED(Device->CreateSamplerState(&SamplerDesc, &NormalSampler))) return false;
+	}
 	std::wstring ShaderDirW = FPaths::ShaderDir();
 	std::wstring VSPath = ShaderDirW + L"VertexShader.hlsl";
 	std::wstring PSPath = ShaderDirW + L"PixelShader.hlsl";
@@ -426,28 +436,12 @@ void FRenderer::ExecuteRenderPass(ERenderLayer InRenderLayer)
 
 		UpdateObjectConstantBuffer(Cmd.WorldMatrix);
 
-		if (Cmd.MeshData)
-		{
-			if (Cmd.MeshData != CurrentMesh)
-			{
-				Cmd.MeshData->Bind(DeviceContext);
-				CurrentMesh = Cmd.MeshData;
-			}
-
-			D3D11_PRIMITIVE_TOPOLOGY DesiredTopology = (D3D11_PRIMITIVE_TOPOLOGY)CurrentMesh->Topology;
-			if (DesiredTopology != CurrentMeshTopology)
-			{
-				DeviceContext->IASetPrimitiveTopology(DesiredTopology);
-				CurrentMeshTopology = DesiredTopology;
-			}
-
-			UpdateObjectConstantBuffer(Cmd.WorldMatrix);
-
-			if (!Cmd.MeshData->Indices.empty())
-				DeviceContext->DrawIndexed(static_cast<UINT>(Cmd.MeshData->Indices.size()), 0, 0);
-			else if (!Cmd.MeshData->Vertices.empty())
-				DeviceContext->Draw(static_cast<UINT>(Cmd.MeshData->Vertices.size()), 0);
-		}
+		if (Cmd.IndexCount > 0)
+			DeviceContext->DrawIndexed(Cmd.IndexCount, Cmd.FirstIndex, 0);
+		else if (!Cmd.MeshData->Indices.empty())
+			DeviceContext->DrawIndexed(static_cast<UINT>(Cmd.MeshData->Indices.size()), 0, 0);
+		else if (!Cmd.MeshData->Vertices.empty())
+			DeviceContext->Draw(static_cast<UINT>(Cmd.MeshData->Vertices.size()), 0);
 
 	}
 }
