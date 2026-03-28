@@ -140,7 +140,7 @@ void FPrimitiveObj::LoadObj(const FString& FilePath)
 			{
 				FIndex Tri[3] = { Face[0], Face[i], Face[i + 1] };
 
-				// ★ 추가: vn 없으면 면 노말 계산
+			
 				FVector FaceNormal(0, 0, 0);
 				if (!Tri[0].bHasNrm)
 				{
@@ -157,9 +157,9 @@ void FPrimitiveObj::LoadObj(const FString& FilePath)
 				{
 					FPrimitiveVertex V{};
 					V.Position = Positions[Tri[j].PosIdx];
-					V.Normal = Tri[j].bHasNrm ? Normals[Tri[j].NrmIdx] : FaceNormal;  // ★ 변경
+					V.Normal = Tri[j].bHasNrm ? Normals[Tri[j].NrmIdx] : FaceNormal;  
 					V.UV = Tri[j].bHasUV ? UVs[Tri[j].UVIdx] : FVector2(0, 0);
-					V.Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);  // ★ 변경: 흰색 기본
+					V.Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f); 
 
 					MeshData->Vertices.push_back(V);
 				}
@@ -171,10 +171,10 @@ void FPrimitiveObj::LoadObj(const FString& FilePath)
 		}
 	}
 
-	// ★ 추가: 마지막 Section 마무리
+
 	FinishSection();
 
-	// ★ 추가: Section 없으면 전체를 1개 Section으로
+
 	if (MeshData->Sections.empty() && !MeshData->Indices.empty())
 	{
 		FMeshSection Sec;

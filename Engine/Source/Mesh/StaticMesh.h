@@ -5,14 +5,6 @@ class ENGINE_API FStaticMesh : public FMesh
 {
 public:
 	FStaticMesh() = default;
+	void SetMeshData(const std::shared_ptr<FMeshData>& InData) { MeshData = InData; }
 
-	bool LoadFromOBJ(const FString& FilePath);
-
-	static std::shared_ptr<FStaticMesh> GetOrLoad(const FString& FilePath);
-	static std::shared_ptr<FStaticMesh> GetCached(const FString& Key);
-	static void ClearCache();
-	static TArray<FString> GetCachedKeys();
-
-private:
-	static TMap<FString, std::shared_ptr<FStaticMesh>> Cache;
 };

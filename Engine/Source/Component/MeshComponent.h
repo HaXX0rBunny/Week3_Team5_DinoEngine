@@ -11,8 +11,10 @@ class ENGINE_API UMeshComponent : public UPrimitiveComponent
 {
 	DECLARE_RTTI(UMeshComponent, UPrimitiveComponent)
 
-	std::shared_ptr<FMesh> GetMesh() const { return Mesh; }
-	void SetMesh(const std::shared_ptr<FMesh>& InMesh) { Mesh = InMesh; }
+	virtual FMeshData* GetMeshData() const { return nullptr; }
+	virtual const TArray<FMeshSection>& GetSections() const;
+	virtual uint32                    GetNumMaterials() const { return 0; }
+
 
 	FMaterial* GetMaterial(uint32 SlotIndex) const;
 	void SetMaterial(uint32 SlotIndex, FMaterial* Mat);
@@ -20,6 +22,6 @@ class ENGINE_API UMeshComponent : public UPrimitiveComponent
 
 	virtual FBoxSphereBounds GetWorldBounds() const;
 protected:
-	std::shared_ptr<FMesh> Mesh;
+
 	TArray<FMaterial*> OverrideMaterials;
 };
