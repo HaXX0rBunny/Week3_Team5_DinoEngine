@@ -162,6 +162,8 @@ void FEditorViewportClient::HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPAR
 	const bool bRightMouseDown = Core->GetInputManager() &&
 		Core->GetInputManager()->IsMouseButtonDown(FInputManager::MOUSE_RIGHT);
 
+#if IS_OBJ_VIEWER
+#else
 	switch (Msg)
 	{
 	case WM_KEYDOWN:
@@ -249,6 +251,7 @@ void FEditorViewportClient::HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPAR
 	default:
 		return;
 	}
+#endif
 }
 
 void FEditorViewportClient::HandleFileDoubleClick(const FString& FilePath)
@@ -334,7 +337,10 @@ void FEditorViewportClient::BuildRenderCommands(FCore* Core, ULevel* Level,
 	AActor* GizmoTarget = Core->GetSelectedActor();
 	if (GizmoTarget && !GizmoTarget->IsA<ASkySphereActor>())
 	{
+#if IS_OBJ_VIEWER
+#else
 		Gizmo.BuildRenderCommands(GizmoTarget, Level->GetCamera(), OutQueue);
+#endif
 	}
 }
 
