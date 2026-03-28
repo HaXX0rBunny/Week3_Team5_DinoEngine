@@ -20,6 +20,9 @@
 #include "Component/UUIDBillboardComponent.h"
 #include "Component/SubUVComponent.h"
 #include "Actor/SkySphereActor.h"
+#include "Mesh/ObjManager.h"
+#include <filesystem>
+
 FCore::~FCore()
 {
 	Release();
@@ -41,7 +44,21 @@ bool FCore::Initialize(HWND Hwnd, int32 Width, int32 Height, ELevelType StartupL
 
 	// Material
 	FMaterialManager::Get().LoadAllMaterials(Renderer->GetDevice(), Renderer->GetRenderStateManager().get());
-
+	{
+		namespace fs = std::filesystem;
+		auto MeshDir = FPaths::ProjectRoot() / "Assets" / "Meshes";
+		if (fs::exists(MeshDir))
+		{
+			for (const auto& entry : fs::directory_iterator(MeshDir))
+			{
+				if (entry.is_regular_file() && entry.path().extension() == ".obj")
+				{
+					auto Rel = fs::relative(entry.path(), FPaths::ProjectRoot());
+					FObjManager::LoadObjStaticMesh(Rel.generic_string());
+				}
+			}
+		}
+	}
 	// InputManager
 	InputManager = new FInputManager();
 	EnhancedInput = new FEnhancedInputManager();
