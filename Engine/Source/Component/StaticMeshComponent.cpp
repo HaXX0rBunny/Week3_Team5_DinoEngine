@@ -5,6 +5,7 @@
 #include "Renderer/MaterialManager.h"
 #include "Object/Class.h"
 #include "ThirdParty/stb_image.h"
+#include "Renderer/Material.h"
 #include "Mesh/ObjManager.h"
 #include <filesystem>
 #include <d3d11.h>
@@ -36,7 +37,7 @@ void UStaticMeshComponent::LoadStaticMesh(ID3D11Device* Device, const FString& F
 		if (DefaultMat)
 		{
 			for (uint32 i = 0; i < GetNumMaterials(); ++i)
-				StaticMeshRenderData->SetDefaultMaterial(i, DefaultMat.get());
+				StaticMeshRenderData->SetDefaultMaterial(i, DefaultMat.get());  
 		}
 	}
 }
@@ -49,22 +50,49 @@ FString UStaticMeshComponent::GetStaticMeshAsset() const
 
 void UStaticMeshComponent::LoadTexture(ID3D11Device* Device, const FString& FilePath)
 {
-	if (!DynamicMaterialOwner)
+	for (uint32 i = 0; i < GetNumMaterials(); ++i)
 	{
+		LoadTextureToSlot(Device, FilePath, i);
+	}
+}
+
+void UStaticMeshComponent::SetStaticMeshData(FStaticMeshRenderData* InMesh)
+{
+	StaticMeshRenderData = InMesh;
+}
+
+void UStaticMeshComponent::LoadTextureToSlot(ID3D11Device* Device, const FString& FilePath, uint32 SlotIndex)
+{
+	if (SlotIndex >= GetNumMaterials()) return; // 유효하지 않은 슬롯 방어
+
+	// 1. Map에서 해당 슬롯의 다이내믹 머티리얼 찾기
+	std::shared_ptr<FDynamicMaterial> DynamicMat;
+	auto It = DynamicMaterialOwners.find(SlotIndex);
+
+	if (It != DynamicMaterialOwners.end())
+	{
+		// 이미 이 슬롯에 할당된 머티리얼이 있으면 재사용
+		DynamicMat = It->second;
+	}
+	else
+	{
+		// 없으면 기본 머티리얼을 찾아 복제 후 새로 생성
 		std::shared_ptr<FMaterial> BaseMat = FMaterialManager::Get().FindByName("M_StaticMesh");
-		if (!BaseMat) 
+		if (!BaseMat)
 			BaseMat = FMaterialManager::Get().FindByName("M_Default_Texture");
-		if (!BaseMat) 
+		if (!BaseMat)
 			return;
-		DynamicMaterialOwner = BaseMat->CreateDynamicMaterial();
+
+		DynamicMat = BaseMat->CreateDynamicMaterial();
+		DynamicMaterialOwners[SlotIndex] = DynamicMat; // Map에 저장
 	}
 
+	// 2. 텍스처 데이터 로드 (올려주신 기존 로직과 동일)
 	int width = 0, height = 0, channels = 0;
 	unsigned char* data = stbi_load(
 		FPaths::ToAbsolutePath(FilePath).c_str(),
 		&width, &height, &channels, STBI_rgb_alpha);
 	if (!data) return;
-
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = width;
@@ -80,7 +108,6 @@ void UStaticMeshComponent::LoadTexture(ID3D11Device* Device, const FString& File
 	initData.pSysMem = data;
 	initData.SysMemPitch = width * 4;
 
-
 	ID3D11Texture2D* texture = nullptr;
 	HRESULT hr = Device->CreateTexture2D(&desc, &initData, &texture);
 	if (FAILED(hr)) { stbi_image_free(data); return; }
@@ -93,20 +120,13 @@ void UStaticMeshComponent::LoadTexture(ID3D11Device* Device, const FString& File
 	if (FAILED(hr)) { stbi_image_free(data); return; }
 	stbi_image_free(data);
 
+	// 3. 머티리얼 텍스처 세팅
 	auto MT = std::make_shared<FMaterialTexture>();
 	MT->TextureSRV = srv;
-	DynamicMaterialOwner->SetMaterialTexture(MT);
+	DynamicMat->SetMaterialTexture(MT);
 
-	if (StaticMeshRenderData)
-	{
-		for (uint32 i = 0; i < StaticMeshRenderData->GetNumMaterialSlots(); ++i)
-			StaticMeshRenderData->SetDefaultMaterial(i, DynamicMaterialOwner.get());
-	}
-}
-
-void UStaticMeshComponent::SetStaticMeshData(FStaticMeshRenderData* InMesh)
-{
-	StaticMeshRenderData = InMesh;
+	// ⭐ 4. 전체 반복문 대신, 인자로 받은 특정 SlotIndex에만 덮어쓰기!
+	SetMaterial(SlotIndex, DynamicMat.get());
 }
 
 FMeshData* UStaticMeshComponent::GetMeshData() const
@@ -135,7 +155,5 @@ FMaterial* UStaticMeshComponent::GetMaterial(uint32 SlotIndex) const
 
 uint32 UStaticMeshComponent::GetNumMaterials() const
 {
-	if (StaticMeshRenderData)
-		return StaticMeshRenderData->GetNumMaterialSlots();
-	return 0;
+	return static_cast<uint32>(GetSections().size());
 }
