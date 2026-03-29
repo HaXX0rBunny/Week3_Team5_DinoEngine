@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrimitiveLineBatch.h" />
+    <ClInclude Include="Source\Widget\WindowManager.h" />
     <ClInclude Include="Source\Actor\StaticMeshActor.h" />
     <ClInclude Include="Source\Actor\TextActor.h" />
     <ClInclude Include="Source\Component\MeshComponent.h" />
@@ -73,6 +74,8 @@
     <ClInclude Include="Source\Input\InputMappingContext.h" />
     <ClInclude Include="Source\Input\InputModifier.h" />
     <ClInclude Include="Source\Input\inputTrigger.h" />
+    <ClInclude Include="Source\Math\Point.h" />
+    <ClInclude Include="Source\Math\Rect.h" />
     <ClInclude Include="Source\Math\Frustum.h" />
     <ClInclude Include="Source\Math\MathUtility.h" />
     <ClInclude Include="Source\Math\Matrix.h" />
@@ -140,12 +143,15 @@
     <ClInclude Include="Source\World\LevelTypes.h" />
     <ClInclude Include="Source\World\World.h" />
     <ClInclude Include="Source\World\WorldContext.h" />
+    <ClInclude Include="Source\Widget\SWindow.h" />
     <ClInclude Include="ThirdParty\stb_image.h" />
     <ClInclude Include="ThirdParty\nlohmann\json.hpp" />
     <ClInclude Include="Source\Core\Viewport.h" />
+    <ClInclude Include="Source\Widget\ViewportWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PrimitiveLineBatch.cpp" />
+    <ClCompile Include="Source\Widget\WindowManager.cpp" />
     <ClCompile Include="Source\Actor\Actor.cpp" />
     <ClCompile Include="Source\Actor\AttachTestActor.cpp" />
     <ClCompile Include="Source\Actor\CubeActor.cpp" />
@@ -233,6 +239,8 @@
     <ClCompile Include="Source\World\LevelManager.cpp" />
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\Core\Viewport.cpp" />
+    <ClCompile Include="Source\Widget\SWindow.cpp" />
+    <ClCompile Include="Source\Widget\ViewportWindow.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

@@ -32,6 +32,7 @@ public:
 	virtual void Shutdown();
 
 	FCore* GetCore() const { return Core.get(); }
+	FRenderCommandQueue& GetCommandQueue() { return CommandQueue; }
 	FWindowApplication* GetApp() const { return App; }
 	FViewportContext* GetActiveViewportContext() const { return ActiveViewportContext; }
 	FViewportContext* GetHoveredViewportContext() const { return HoveredViewportContext; }

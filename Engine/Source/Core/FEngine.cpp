@@ -69,6 +69,8 @@ bool FEngine::Initialize(HINSTANCE hInstance, const wchar_t* Title, int32 Width,
 	GEngine = this;
 
 
+
+
 	MainWindow = App->GetMainWindow();
 	if (!MainWindow)
 	{
