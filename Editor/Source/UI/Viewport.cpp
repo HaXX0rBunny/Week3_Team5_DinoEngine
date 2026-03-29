@@ -54,6 +54,8 @@ FViewportLegacy::~FViewportLegacy()
 
 void FViewportLegacy::Render(HWND Hwnd)
 {
+	(void)Hwnd;
+
 	const bool bOpen = ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 	if (!bOpen)
 	{
@@ -108,19 +110,6 @@ void FViewportLegacy::Render(HWND Hwnd)
 	const uint32 NewHeight = ContentSize.y > 1.0f ? static_cast<uint32>(ContentSize.y) : 0;
 
 	bVisible = (NewWidth > 0 && NewHeight > 0);
-
-	if (Hwnd)
-	{
-		POINT ClientPoint = { static_cast<LONG>(ContentPos.x), static_cast<LONG>(ContentPos.y) };
-		::ScreenToClient(Hwnd, &ClientPoint);
-		ClientPosX = ClientPoint.x;
-		ClientPosY = ClientPoint.y;
-	}
-	else
-	{
-		ClientPosX = 0;
-		ClientPosY = 0;
-	}
 
 	if (!bVisible)
 	{
@@ -200,13 +189,13 @@ bool FViewportLegacy::GetMousePositionInViewport(int32 WindowMouseX, int32 Windo
 		return false;
 	}
 
-	if (WindowMouseX < ClientPosX || WindowMouseY < ClientPosY)
+	if (WindowMouseX < 0 || WindowMouseY < 0)
 	{
 		return false;
 	}
 
-	const int32 LocalX = WindowMouseX - ClientPosX;
-	const int32 LocalY = WindowMouseY - ClientPosY;
+	const int32 LocalX = WindowMouseX;
+	const int32 LocalY = WindowMouseY;
 	if (LocalX < 0 || LocalY < 0 || LocalX >= static_cast<int32>(OffscreenWidth) || LocalY >= static_cast<int32>(OffscreenHeight))
 	{
 		return false;
@@ -230,8 +219,8 @@ bool FViewportLegacy::GetContentRect(int32& OutClientPosX, int32& OutClientPosY,
 		return false;
 	}
 
-	OutClientPosX = ClientPosX;
-	OutClientPosY = ClientPosY;
+	OutClientPosX = 0;
+	OutClientPosY = 0;
 	OutWidth = OffscreenWidth;
 	OutHeight = OffscreenHeight;
 	return true;
