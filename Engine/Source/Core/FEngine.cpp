@@ -121,6 +121,8 @@ void FEngine::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 	{
 		InputManager->ProcessMessage(Hwnd, Msg, WParam, LParam);
 	}
+
+	WindowManager.HandleMessage(Core.get(), Hwnd, Msg, WParam, LParam);
 }
 
 void FEngine::Tick(float DeltaTime)

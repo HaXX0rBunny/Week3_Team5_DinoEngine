@@ -1,5 +1,8 @@
 #pragma once
 #include "Math/Rect.h"
+#include "Windows.h"
+
+class FCore;
 
 enum SplitDirection
 {
@@ -36,6 +39,7 @@ public:
 	virtual void OnResize() {}
 	virtual void Tick(float DeltaTime) {}
 	virtual void Draw() {}
+	virtual bool HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam) { return false; }
 	SSplitter* Split(SWindow* InNewWindow, SplitDirection InDirection, SplitOption InSplitOption);
 };
 
@@ -63,6 +67,7 @@ public:
 	virtual void SetSplitRatio(float InSplitRatio);
 	virtual void Tick(float DeltaTime) override;
 	virtual void Draw() override;
+	virtual bool HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam) override;
 };
 
 class SSplitterH : public SSplitter

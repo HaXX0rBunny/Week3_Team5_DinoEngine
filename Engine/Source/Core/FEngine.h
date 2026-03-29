@@ -30,6 +30,7 @@ public:
 	FCore* GetCore() const { return Core.get(); }
 	FRenderCommandQueue& GetCommandQueue() { return CommandQueue; }
 	FWindowApplication* GetApp() const { return App; }
+	FWindowManager& GetWindowManager() { return WindowManager; }
 	void SetViewportLayoutBounds(int32 InTopLeftX, int32 InTopLeftY, uint32 InWidth, uint32 InHeight);
 	FViewportContext* CreateContext(FRect InRect);
 

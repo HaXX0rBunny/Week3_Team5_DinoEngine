@@ -48,3 +48,13 @@ void SViewportWindow::OnResize()
 
 	ViewportContext->SetRect(GetRect());
 }
+
+bool SViewportWindow::HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
+{
+	if (!ViewportContext || !Core)
+	{
+		return false;
+	}
+
+	return ViewportContext->HandleMessage(Core, Hwnd, Msg, WParam, LParam);
+}

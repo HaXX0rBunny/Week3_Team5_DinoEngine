@@ -18,6 +18,7 @@
 #include "Core/Paths.h"
 
 #include <windows.h>
+#include <windowsx.h>
 #include <commdlg.h>
 
 #include "UI/EditorViewportClient.h"
@@ -305,6 +306,23 @@ void FEditorUI::SetupWindow(FWindow* InWindow)
 				return false;
 			}
 
+			const bool bIsMouseMessage =
+				Msg == WM_MOUSEMOVE ||
+				Msg == WM_LBUTTONDOWN ||
+				Msg == WM_LBUTTONUP ||
+				Msg == WM_RBUTTONDOWN ||
+				Msg == WM_RBUTTONUP ||
+				Msg == WM_MBUTTONDOWN ||
+				Msg == WM_MBUTTONUP ||
+				Msg == WM_MOUSEWHEEL ||
+				Msg == WM_MOUSEHWHEEL;
+
+			const bool bIsKeyboardMessage =
+				Msg == WM_KEYDOWN ||
+				Msg == WM_KEYUP ||
+				Msg == WM_SYSKEYDOWN ||
+				Msg == WM_SYSKEYUP;
+
 			const bool bIsImeMessage =
 				Msg == WM_IME_STARTCOMPOSITION ||
 				Msg == WM_IME_COMPOSITION ||
@@ -334,12 +352,38 @@ void FEditorUI::SetupWindow(FWindow* InWindow)
 				}
 			}
 
-			const bool bHandledByImGui = ImGui_ImplWin32_WndProcHandler(Hwnd, Msg, WParam, LParam) != 0;
+			bool bViewportInteractive = false;
+			if (GEngine)
+			{
+				POINT ClientPoint = {};
+				if (bIsMouseMessage)
+				{
+					ClientPoint.x = GET_X_LPARAM(LParam);
+					ClientPoint.y = GET_Y_LPARAM(LParam);
+				}
+				else if (bIsKeyboardMessage)
+				{
+					POINT ScreenPoint = {};
+					if (::GetCursorPos(&ScreenPoint))
+					{
+						ClientPoint = ScreenPoint;
+						::ScreenToClient(Hwnd, &ClientPoint);
+					}
+				}
 
-			//if (IsViewportInteractive())
-			//{
-			//	return false;
-			//}
+				if (bIsMouseMessage || bIsKeyboardMessage)
+				{
+					bViewportInteractive =
+						GEngine->GetWindowManager().GetWindowAtPoint(
+							FPoint(static_cast<float>(ClientPoint.x), static_cast<float>(ClientPoint.y))) != nullptr;
+				}
+			}
+
+			const bool bHandledByImGui = ImGui_ImplWin32_WndProcHandler(Hwnd, Msg, WParam, LParam) != 0;
+			if (bViewportInteractive && (bIsMouseMessage || bIsKeyboardMessage))
+			{
+				return false;
+			}
 
 			return bHandledByImGui;
 		});

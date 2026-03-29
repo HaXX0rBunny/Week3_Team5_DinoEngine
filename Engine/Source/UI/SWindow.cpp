@@ -1,5 +1,30 @@
 #include "SWindow.h"
 #include <stdexcept>
+#include <windowsx.h>
+#include "CoreMinimal.h"
+#include "Windows.h"
+
+namespace
+{
+	bool IsMouseMessage(UINT Msg)
+	{
+		switch (Msg)
+		{
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MOUSEWHEEL:
+		case WM_MOUSEHWHEEL:
+			return true;
+		default:
+			return false;
+		}
+	}
+}
 
 void SWindow::SetRect(const FRect& InRect)
 {
@@ -189,6 +214,37 @@ void SSplitter::Draw()
 	{
 		SideRB->Draw();
 	}
+}
+
+bool SSplitter::HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
+{
+	if (IsMouseMessage(Msg))
+	{
+		const FPoint MousePoint(static_cast<float>(GET_X_LPARAM(LParam)), static_cast<float>(GET_Y_LPARAM(LParam)));
+		if (SideLT && SideLT->ISHover(MousePoint))
+		{
+			return SideLT->HandleMessage(Core, Hwnd, Msg, WParam, LParam);
+		}
+
+		if (SideRB && SideRB->ISHover(MousePoint))
+		{
+			return SideRB->HandleMessage(Core, Hwnd, Msg, WParam, LParam);
+		}
+
+		return false;
+	}
+
+	if (SideLT && SideLT->HandleMessage(Core, Hwnd, Msg, WParam, LParam))
+	{
+		return true;
+	}
+
+	if (SideRB && SideRB->HandleMessage(Core, Hwnd, Msg, WParam, LParam))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 FRect SSplitterH::GetSideLTRect()

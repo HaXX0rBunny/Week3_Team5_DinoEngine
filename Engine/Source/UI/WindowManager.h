@@ -26,6 +26,7 @@ public:
 	void SetRootRect(const FRect& InRect);
 	void CheckParent();
 	SWindow* GetWindowAtPoint(const FPoint& Point) const;
+	bool HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam);
 	void Tick(float DeltaTime);
 	void DrawWindows() const;
 	void AddWindow(SWindow* NewWindow);

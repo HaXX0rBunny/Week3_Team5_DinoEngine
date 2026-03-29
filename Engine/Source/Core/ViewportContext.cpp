@@ -164,6 +164,7 @@ void FViewportContext::Tick(FCore* Core, float DeltaTime)
 	}
 
 	ViewportClient->Tick(DeltaTime);
+	ViewportClient->ProcessCameraInput(Core, DeltaTime);
 }
 
 bool FViewportContext::HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
