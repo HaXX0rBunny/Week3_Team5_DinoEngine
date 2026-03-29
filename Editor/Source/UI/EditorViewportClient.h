@@ -15,6 +15,7 @@ enum class ERenderMode
 	Lighting,
 	NoLighting,
 	Wireframe,
+	SolidWireframe,
 };
 
 class FEditorViewportClient : public FViewportClient
@@ -49,7 +50,11 @@ private:
 
 	ERenderMode RenderMode = ERenderMode::Lighting;
 	const FString WireframeMaterialName = "M_Wireframe";
+	const FString SolidWireframeFillMaterialName = "M_SolidWireframeFill";
+	const FString SolidWireframeLineMaterialName = "M_SolidWireframeLine";
 	std::shared_ptr<FMaterial> WireFrameMaterial = nullptr;
+	std::shared_ptr<FMaterial> SolidWireFrameFillMaterial = nullptr;
+	std::shared_ptr<FMaterial> SolidWireFrameLineMaterial = nullptr;
 
 	int32 ScreenWidth = 0;
 	int32 ScreenHeight = 0;

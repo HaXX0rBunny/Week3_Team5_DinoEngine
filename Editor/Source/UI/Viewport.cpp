@@ -102,7 +102,7 @@ void FViewport::Render(FCore* Core, FRenderer* Renderer, HWND Hwnd)
 			ImGui::SetNextItemWidth(RenderModeComboWidth);
 			{
 				ERenderMode RenderMode = EditorViewportClient->GetRenderMode();
-				ImGui::Combo("", (int*) &RenderMode, "Lighting\0No Lighting\0Wireframe", 3);
+				ImGui::Combo("", (int*) &RenderMode, "Lighting\0No Lighting\0Wireframe\0SolidWireframe", 3);
 				EditorViewportClient->SetRenderMode(RenderMode);
 			}
 		}

@@ -37,8 +37,10 @@ void FEditorViewportClient::Attach(FCore* Core, FRenderer* Renderer)
 	EditorUI.SetupWindow(MainWindow);
 	EditorUI.AttachToRenderer(Renderer);
 
-	// Wireframe 모드를 위한 머티리얼 가져와서 보관
+	// Wireframe / SolidWireframe 모드를 위한 머티리얼을 미리 로드합니다.
 	WireFrameMaterial = FMaterialManager::Get().FindByName(WireframeMaterialName);
+	SolidWireFrameFillMaterial = FMaterialManager::Get().FindByName(SolidWireframeFillMaterialName);
+	SolidWireFrameLineMaterial = FMaterialManager::Get().FindByName(SolidWireframeLineMaterialName);
 
 	CreateGridResource(Renderer);
 }
@@ -318,6 +320,30 @@ void FEditorViewportClient::BuildRenderCommands(FCore* Core, ULevel* Level,
 				it->Material = WireFrameMaterial.get();
 		}
 	}
+	else if (RenderMode == ERenderMode::SolidWireframe)
+	{
+		TArray<FRenderCommand> SolidWireframeCommands;
+		SolidWireframeCommands.reserve(OutQueue.Commands.size() * 2);
+
+		for (const FRenderCommand& Command : OutQueue.Commands)
+		{
+			if (Command.RenderLayer == ERenderLayer::Overlay)
+			{
+				SolidWireframeCommands.push_back(Command);
+				continue;
+			}
+
+			FRenderCommand FillCommand = Command;
+			FillCommand.Material = SolidWireFrameFillMaterial.get();
+			SolidWireframeCommands.push_back(FillCommand);
+
+			FRenderCommand LineCommand = Command;
+			LineCommand.Material = SolidWireFrameLineMaterial.get();
+			SolidWireframeCommands.push_back(LineCommand);
+		}
+
+		OutQueue.Commands = std::move(SolidWireframeCommands);
+	}
 
 	if (!Core || !Level || !Level->GetCamera())
 	{
@@ -335,6 +361,7 @@ void FEditorViewportClient::BuildRenderCommands(FCore* Core, ULevel* Level,
 		OutQueue.AddCommand(GridCmd);
 	}
 
+	//viewer에서는 gizmo 렌더링x
 	AActor* GizmoTarget = Core->GetSelectedActor();
 	if (GizmoTarget && !GizmoTarget->IsA<ASkySphereActor>())
 	{
