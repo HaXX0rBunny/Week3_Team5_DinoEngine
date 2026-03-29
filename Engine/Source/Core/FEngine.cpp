@@ -70,9 +70,6 @@ void FEngine::Run()
 			Tick(Core->GetTimer().GetDeltaTime());
 			Core->Tick();
 		}
-
-		Input(Core->GetTimer().GetDeltaTime());
-		Render();
 	}
 }
 
@@ -84,11 +81,11 @@ bool FEngine::OnInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 
 void FEngine::OnResize(int32 Width, int32 Height)
 {
-	//WindowManager.SetRootRect(FRect(
-		//0.0f,
-		//0.0f,
-		//static_cast<float>((std::max)(Width, 0)),
-		//static_cast<float>((std::max)(Height, 0))));
+	WindowManager.SetRootRect(FRect(
+		0.0f,
+		0.0f,
+		static_cast<float>((std::max)(Width, 0)),
+		static_cast<float>((std::max)(Height, 0))));
 
 	if (Core)
 	{
@@ -98,11 +95,11 @@ void FEngine::OnResize(int32 Width, int32 Height)
 
 void FEngine::SetViewportLayoutBounds(int32 InTopLeftX, int32 InTopLeftY, uint32 InWidth, uint32 InHeight)
 {
-	//WindowManager.SetRootRect(FRect(
-	//	static_cast<float>(InTopLeftX),
-	//	static_cast<float>(InTopLeftY),
-	//	static_cast<float>(InWidth),
-	//	static_cast<float>(InHeight)));
+	WindowManager.SetRootRect(FRect(
+		static_cast<float>(InTopLeftX),
+		static_cast<float>(InTopLeftY),
+		static_cast<float>(InWidth),
+		static_cast<float>(InHeight)));
 }
 
 void FEngine::Input(float DeltaTime)
@@ -128,7 +125,10 @@ void FEngine::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 
 void FEngine::Tick(float DeltaTime)
 {
+	Input(Core->GetTimer().GetDeltaTime());
 	WindowManager.Tick(DeltaTime);
+	WindowManager.CheckParent();
+	Render();
 }
 
 void FEngine::Shutdown()

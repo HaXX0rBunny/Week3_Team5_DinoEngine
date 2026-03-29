@@ -37,6 +37,20 @@ void FWindowManager::SetRootRect(const FRect& InRect)
 	Windows[0]->SetRect(InRect);
 }
 
+void FWindowManager::CheckParent()
+{
+	for(int i = 0; i < Windows.size(); ++i)
+	{
+		if (!Windows[i])
+			continue;
+
+		if(!Windows[i]->GetParent())
+			continue;
+
+		Windows[i] = Windows[i]->GetParent();
+	}
+}
+
 SWindow* FWindowManager::GetWindowAtPoint(const FPoint& Point) const
 {
 	for (SWindow* Window : Windows)

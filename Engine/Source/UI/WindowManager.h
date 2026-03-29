@@ -24,6 +24,7 @@ public:
 	void Initialize(FInputManager* InInputManager, FEnhancedInputManager* InEnhancedInputManager);
 	void Shutdown();
 	void SetRootRect(const FRect& InRect);
+	void CheckParent();
 	SWindow* GetWindowAtPoint(const FPoint& Point) const;
 	void Tick(float DeltaTime);
 	void DrawWindows() const;

@@ -42,6 +42,12 @@ SSplitter* SWindow::Split(SWindow* InNewWindow, SplitDirection InDirection, Spli
 	if (!NewSplitter)
 		return nullptr;
 
+	NewSplitter->SetParent(Parent);
+	if(Parent)
+	{
+		Parent->ReplaceSide(this, NewSplitter);
+	}
+
 	if (InSplitOption == SplitOption::LT)
 	{
 		NewSplitter->SetSideLT(this);
@@ -52,10 +58,7 @@ SSplitter* SWindow::Split(SWindow* InNewWindow, SplitDirection InDirection, Spli
 		NewSplitter->SetSideLT(InNewWindow);
 		NewSplitter->SetSideRB(this);
 	}
-	NewSplitter->SetParent(Parent);
 
-	if(Parent != nullptr)
-		Parent->ReplaceSide(this, NewSplitter);
 
 
 	return NewSplitter;

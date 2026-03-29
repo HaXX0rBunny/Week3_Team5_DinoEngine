@@ -31,10 +31,12 @@ void SViewportWindow::Draw()
 		ViewportContext->Render(GEngine->GetCore(), GEngine->GetCommandQueue());
 	}
 
+	ImGui::PushID(this);
 	if (ImGui::Button("Test Button"))
 	{
 		Split(new SViewportWindow(FRect(0.0f, 0.0f, 150, 150), GEngine->CreateContext(FRect(0.0f, 0.0f, 150, 150))), SplitDirection::Horizontal, SplitOption::RB);
 	}
+	ImGui::PopID();
 }
 
 void SViewportWindow::OnResize()
