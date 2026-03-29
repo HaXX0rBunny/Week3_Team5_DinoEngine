@@ -23,6 +23,8 @@ protected:
 	FRect Rect;
 
 public:
+	SWindow() = default;
+	SWindow(FRect InRect) : Rect(InRect) {}
 	virtual ~SWindow() = default;
 
 	void SetParent(SSplitter* InParent) { Parent = InParent; }
@@ -55,7 +57,7 @@ public:
 	virtual FRect GetSideRBRect() = 0;
 	virtual void OnResize() override;
 	void ReplaceSide(SWindow* OldSide, SWindow* NewSide);
-	SSplitter(SWindow* InSideLT = nullptr, SWindow* InSideRB = nullptr, float InSplitRatio = 0.5f);
+	SSplitter(FRect InRect, SWindow* InSideLT = nullptr, SWindow* InSideRB = nullptr, float InSplitRatio = 0.5f);
 	~SSplitter() override;
 	float GetSplitRatio() { return SplitRatio; }
 	virtual void SetSplitRatio(float InSplitRatio);
@@ -66,8 +68,8 @@ public:
 class SSplitterH : public SSplitter
 {
 public:
-	SSplitterH(SWindow* InSideLT = nullptr, SWindow* InSideRB = nullptr, float InSplitRatio = 0.5f)
-		: SSplitter(InSideLT, InSideRB, InSplitRatio) {}
+	SSplitterH(FRect InRect, SWindow* InSideLT = nullptr, SWindow* InSideRB = nullptr, float InSplitRatio = 0.5f)
+		: SSplitter(InRect, InSideLT, InSideRB, InSplitRatio) {}
 
 	virtual FRect GetSideLTRect() override;
 	virtual FRect GetSideRBRect() override;
@@ -76,8 +78,8 @@ public:
 class SSplitterV : public SSplitter
 {
 public:
-	SSplitterV(SWindow* InSideLT = nullptr, SWindow* InSideRB = nullptr, float InSplitRatio = 0.5f)
-		: SSplitter(InSideLT, InSideRB, InSplitRatio) {}
+	SSplitterV(FRect InRect, SWindow* InSideLT = nullptr, SWindow* InSideRB = nullptr, float InSplitRatio = 0.5f)
+		: SSplitter(InRect, InSideLT, InSideRB, InSplitRatio) {}
 
 	virtual FRect GetSideLTRect() override;
 	virtual FRect GetSideRBRect() override;

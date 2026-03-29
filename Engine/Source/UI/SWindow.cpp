@@ -32,11 +32,11 @@ SSplitter* SWindow::Split(SWindow* InNewWindow, SplitDirection InDirection, Spli
 
 	if (InDirection == SplitDirection::Horizontal)
 	{
-		NewSplitter = new SSplitterH();
+		NewSplitter = new SSplitterH(GetRect());
 	}
 	else if (InDirection == SplitDirection::Vertical)
 	{
-		NewSplitter = new SSplitterV();
+		NewSplitter = new SSplitterV(GetRect());
 	}
 
 	if (!NewSplitter)
@@ -56,6 +56,8 @@ SSplitter* SWindow::Split(SWindow* InNewWindow, SplitDirection InDirection, Spli
 
 	if(Parent != nullptr)
 		Parent->ReplaceSide(this, NewSplitter);
+
+
 	return NewSplitter;
 }
 
@@ -106,12 +108,16 @@ void SSplitter::ReplaceSide(SWindow* OldSide, SWindow* NewSide)
 	throw std::runtime_error("OldSide is not part of this splitter.");
 }
 
-SSplitter::SSplitter(SWindow* InSideLT, SWindow* InSideRB, float InSplitRatio)
-	: SideLT(InSideLT), SideRB(InSideRB), SplitRatio(InSplitRatio)
+SSplitter::SSplitter(FRect InRect, SWindow* InSideLT, SWindow* InSideRB, float InSplitRatio)
+	: SWindow(InRect), SideLT(InSideLT), SideRB(InSideRB), SplitRatio(InSplitRatio)
 {
 	SetSplitRatio(InSplitRatio);
-	SetSideLT(InSideLT);
-	SetSideRB(InSideRB);
+
+	if(InSideLT)
+		SetSideLT(InSideLT);
+
+	if(InSideRB)
+		SetSideRB(InSideRB);
 }
 
 SSplitter::~SSplitter()

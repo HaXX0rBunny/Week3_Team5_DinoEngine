@@ -6,7 +6,7 @@
 #include "Core/ViewportContext.h"
 #include "ViewportClient.h"
 #include <memory>
-#include "Widget/WindowManager.h"
+#include "UI/WindowManager.h"
 #include "Math/Rect.h"
 
 class FWindowApplication;
@@ -31,6 +31,7 @@ public:
 	FRenderCommandQueue& GetCommandQueue() { return CommandQueue; }
 	FWindowApplication* GetApp() const { return App; }
 	void SetViewportLayoutBounds(int32 InTopLeftX, int32 InTopLeftY, uint32 InWidth, uint32 InHeight);
+	FViewportContext* CreateContext(FRect InRect);
 
 protected:
 	virtual void PreInitialize() {}
@@ -52,7 +53,6 @@ protected:
 	FWindowManager WindowManager;
 
 private:
-	FViewportContext* CreateContext(FRect InRect);
 	bool OnInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam);
 	void OnResize(int32 Width, int32 Height);
 };

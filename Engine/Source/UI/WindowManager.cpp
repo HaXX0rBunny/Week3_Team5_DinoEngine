@@ -1,5 +1,4 @@
 #include "WindowManager.h"
-#include "ViewportWindow.h"
 #include "Core/Viewport.h"
 #include "Core/ViewportClient.h"
 #include "Core/ViewportContext.h"
@@ -71,4 +70,14 @@ void FWindowManager::DrawWindows() const
 			Window->Draw();
 		}
 	}
+}
+
+void FWindowManager::AddWindow(SWindow* NewWindow)
+{
+	if (!NewWindow)
+	{
+		return;
+	}
+
+	Windows.push_back(NewWindow);
 }

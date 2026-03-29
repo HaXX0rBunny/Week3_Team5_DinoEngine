@@ -4,7 +4,6 @@
 #include "SWindow.h"
 #include <functional>
 #include <memory>
-#include "Widget/ViewportWindow.h"
 
 class FViewportClient;
 class FViewportContext;
@@ -28,12 +27,5 @@ public:
 	SWindow* GetWindowAtPoint(const FPoint& Point) const;
 	void Tick(float DeltaTime);
 	void DrawWindows() const;
-
-	template <typename T, typename... Args>
-	T* CreateSWindow(Args&&... args)
-	{
-		T* NewWindow = new T(std::forward<Args>(args)...);
-		Windows.push_back(NewWindow);
-		return NewWindow;
-	}
+	void AddWindow(SWindow* NewWindow);
 };

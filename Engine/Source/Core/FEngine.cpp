@@ -4,7 +4,7 @@
 #include "Object/ObjectGlobals.h"
 #include "Math/Rect.h"
 
-FEngine* GEngine = nullptr;
+ENGINE_API FEngine* GEngine = nullptr;
 
 FEngine::~FEngine()
 {
@@ -42,7 +42,6 @@ bool FEngine::Initialize(HINSTANCE hInstance, const wchar_t* Title, int32 Width,
 	InputManager = new FInputManager();
 	EnhancedInput = new FEnhancedInputManager();
 	WindowManager.Initialize(InputManager, EnhancedInput);
-	WindowManager.CreateSWindow<SViewportWindow>(CreateContext(FRect(0.0f, 0.0f, static_cast<float>(MainWindow->GetWidth()), static_cast<float>(MainWindow->GetHeight()))));
 	PostInitialize();
 
 	App->AddMessageFilter(std::bind(&FEngine::OnInput, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
@@ -85,11 +84,11 @@ bool FEngine::OnInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 
 void FEngine::OnResize(int32 Width, int32 Height)
 {
-	WindowManager.SetRootRect(FRect(
-		0.0f,
-		0.0f,
-		static_cast<float>((std::max)(Width, 0)),
-		static_cast<float>((std::max)(Height, 0))));
+	//WindowManager.SetRootRect(FRect(
+		//0.0f,
+		//0.0f,
+		//static_cast<float>((std::max)(Width, 0)),
+		//static_cast<float>((std::max)(Height, 0))));
 
 	if (Core)
 	{
@@ -99,11 +98,11 @@ void FEngine::OnResize(int32 Width, int32 Height)
 
 void FEngine::SetViewportLayoutBounds(int32 InTopLeftX, int32 InTopLeftY, uint32 InWidth, uint32 InHeight)
 {
-	WindowManager.SetRootRect(FRect(
-		static_cast<float>(InTopLeftX),
-		static_cast<float>(InTopLeftY),
-		static_cast<float>(InWidth),
-		static_cast<float>(InHeight)));
+	//WindowManager.SetRootRect(FRect(
+	//	static_cast<float>(InTopLeftX),
+	//	static_cast<float>(InTopLeftY),
+	//	static_cast<float>(InWidth),
+	//	static_cast<float>(InHeight)));
 }
 
 void FEngine::Input(float DeltaTime)

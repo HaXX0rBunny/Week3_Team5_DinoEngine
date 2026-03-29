@@ -28,7 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrimitiveLineBatch.h" />
-    <ClInclude Include="Source\Widget\WindowManager.h" />
     <ClInclude Include="Source\Actor\StaticMeshActor.h" />
     <ClInclude Include="Source\Actor\TextActor.h" />
     <ClInclude Include="Source\Component\MeshComponent.h" />
@@ -136,6 +135,8 @@
     <ClInclude Include="Source\Types\Set.h" />
     <ClInclude Include="Source\Types\StaticArray.h" />
     <ClInclude Include="Source\Types\String.h" />
+    <ClInclude Include="Source\UI\SWindow.h" />
+    <ClInclude Include="Source\UI\WindowManager.h" />
     <ClInclude Include="Source\World\Level.h" />
     <ClInclude Include="Source\World\LevelManager.h" />
     <ClInclude Include="Source\World\RenderCollector.h" />
@@ -143,16 +144,13 @@
     <ClInclude Include="Source\World\LevelTypes.h" />
     <ClInclude Include="Source\World\World.h" />
     <ClInclude Include="Source\World\WorldContext.h" />
-    <ClInclude Include="Source\Widget\SWindow.h" />
     <ClInclude Include="ThirdParty\stb_image.h" />
     <ClInclude Include="ThirdParty\nlohmann\json.hpp" />
     <ClInclude Include="Source\Core\Viewport.h" />
-    <ClInclude Include="Source\Widget\ViewportWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PrimitiveLineBatch.cpp" />
     <ClCompile Include="Source\Math\Rect.cpp" />
-    <ClCompile Include="Source\Widget\WindowManager.cpp" />
     <ClCompile Include="Source\Actor\Actor.cpp" />
     <ClCompile Include="Source\Actor\AttachTestActor.cpp" />
     <ClCompile Include="Source\Actor\CubeActor.cpp" />
@@ -235,13 +233,13 @@
     <ClCompile Include="Source\Serializer\Archive.cpp" />
     <ClCompile Include="Source\Serializer\SceneSerializer.cpp" />
     <ClCompile Include="Source\Types\Name.cpp" />
+    <ClCompile Include="Source\UI\SWindow.cpp" />
+    <ClCompile Include="Source\UI\WindowManager.cpp" />
     <ClCompile Include="Source\World\Level.cpp" />
     <ClCompile Include="Source\World\RenderCollector.cpp" />
     <ClCompile Include="Source\World\LevelManager.cpp" />
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\Core\Viewport.cpp" />
-    <ClCompile Include="Source\Widget\SWindow.cpp" />
-    <ClCompile Include="Source\Widget\ViewportWindow.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

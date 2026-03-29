@@ -315,10 +315,9 @@
     <ClCompile Include="Source\Actor\StaticMeshActor.cpp" />
     <ClCompile Include="Source\Core\Viewport.cpp" />
     <ClCompile Include="Source\Core\ViewportContext.cpp" />
-    <ClCompile Include="Source\Widget\SWindow.cpp" />
-    <ClCompile Include="Source\Widget\WindowManager.cpp" />
-    <ClCompile Include="Source\Widget\ViewportWindow.cpp" />
     <ClCompile Include="Source\Math\Rect.cpp" />
+    <ClCompile Include="Source\UI\SWindow.cpp" />
+    <ClCompile Include="Source\UI\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CoreMinimal.h">
@@ -653,11 +652,10 @@
     <ClInclude Include="Source\Mesh\StaticMesh.h" />
     <ClInclude Include="Source\Core\Viewport.h" />
     <ClInclude Include="Source\Core\ViewportContext.h" />
-    <ClInclude Include="Source\Widget\SWindow.h" />
     <ClInclude Include="Source\Math\Rect.h" />
     <ClInclude Include="Source\Math\Point.h" />
-    <ClInclude Include="Source\Widget\WindowManager.h" />
-    <ClInclude Include="Source\Widget\ViewportWindow.h" />
+    <ClInclude Include="Source\UI\SWindow.h" />
+    <ClInclude Include="Source\UI\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

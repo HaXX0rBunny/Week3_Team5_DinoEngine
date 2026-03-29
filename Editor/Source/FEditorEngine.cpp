@@ -7,6 +7,7 @@
 #include "World/Level.h"
 #include "Debug/EngineLog.h"
 #include "imgui_impl_win32.h"
+#include "UI/ViewportWindow.h"
 
 bool FEditorEngine::Initialize(HINSTANCE hInstance)
 {
@@ -16,6 +17,9 @@ bool FEditorEngine::Initialize(HINSTANCE hInstance)
 	{
 		return false;
 	}
+
+	WindowManager.AddWindow(new SViewportWindow(FRect(0.0f, 0.0f, 150, 150), CreateContext(FRect(0.0f, 0.0f, 150, 150))));
+
 
 	return true;
 }

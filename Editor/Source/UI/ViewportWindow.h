@@ -1,15 +1,15 @@
 #pragma once
 #include "EngineAPI.h"
-#include "SWindow.h"
+#include "UI/SWindow.h"
 #include "Core/ViewportContext.h"
 #include <memory>
 
-class ENGINE_API SViewportWindow : public SWindow
+class SViewportWindow : public SWindow
 {
 	FViewportContext* ViewportContext;
 
 public:
-	explicit SViewportWindow(FViewportContext* InViewportContext);
+	explicit SViewportWindow(FRect InRect, FViewportContext* InViewportContext);
 	~SViewportWindow() override;
 
 	virtual void Tick(float DeltaTime) override;
