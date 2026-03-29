@@ -16,3 +16,12 @@ void SViewportWindow::Draw()
 {
 	ViewportContext->Render(GEngine->GetCore(), GEngine->GetCommandQueue());
 }
+
+void SViewportWindow::OnResize()
+{
+	if (ViewportContext)
+		return;
+
+	FRect Rect = GetRect();
+	ViewportContext->SetRect(Rect);
+}

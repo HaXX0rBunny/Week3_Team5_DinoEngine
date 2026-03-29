@@ -1,5 +1,11 @@
 #include "SWindow.h"
 
+void SWindow::SetRect(const FRect& InRect)
+{
+	Rect = InRect;
+	OnResize();
+}
+
 bool SWindow::ISHover(FPoint coord) const
 {
 	return coord.X >= Rect.Position.X && coord.X <= Rect.Position.X + Rect.Size.X &&
@@ -20,6 +26,20 @@ SSplitter::SSplitter(SWindow* InSideLT, SWindow* InSideRB, float InSplitRatio)
 	: SideLT(InSideLT), SideRB(InSideRB), SplitRatio(InSplitRatio)
 {
 	SetSplitRatio(InSplitRatio);
+}
+
+SSplitter::~SSplitter()
+{
+	if (SideLT)
+	{
+		delete SideLT;
+		SideLT = nullptr;
+	}
+	if (SideRB)
+	{
+		delete SideRB;
+		SideRB = nullptr;
+	}
 }
 
 SWindow* SSplitter::GetWindow(FPoint coord)

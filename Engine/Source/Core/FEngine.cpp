@@ -87,7 +87,9 @@ bool FEngine::Initialize(HINSTANCE hInstance, const wchar_t* Title, int32 Width,
 	InputManager = new FInputManager();
 	EnhancedInput = new FEnhancedInputManager();
 
-	InitializeViewportContexts(4);
+	//InitializeViewportContexts(4);
+	
+	WindowManager.CreateSWindow<SViewportWindow>(CreateViewportContext({ {100, 100}, {100, 100} }));
 	ViewportLayoutOriginX = 0;
 	ViewportLayoutOriginY = 0;
 	ViewportLayoutWidth = static_cast<uint32>((std::max)(MainWindow->GetWidth(), 0));
@@ -283,6 +285,7 @@ void FEngine::Render()
 	}
 
 	GRenderer->BeginFrame();
+	WindowManager.DrawWindows();
 	RenderAllViewports();
 	GRenderer->EndFrame();
 }
@@ -300,36 +303,28 @@ void FEngine::UpdateViewportLayout(int32 Width, int32 Height)
 	const uint32 SafeHeight = static_cast<uint32>((std::max)(Height, 0));
 	const int32 LayoutOriginX = ViewportLayoutOriginX;
 	const int32 LayoutOriginY = ViewportLayoutOriginY;
-	struct FViewportRect
-	{
-		int32 X;
-		int32 Y;
-		uint32 Width;
-		uint32 Height;
-	};
-
-	TArray<FViewportRect> Rects;
+	TArray<FRect> Rects;
 	Rects.reserve(Viewports.size());
 
 	switch (ViewportLayout)
 	{
 	case EViewportLayout::Single:
-		Rects.push_back({ 0, 0, SafeWidth, SafeHeight });
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX), static_cast<float>(LayoutOriginY), static_cast<float>(SafeWidth), static_cast<float>(SafeHeight)));
 		break;
 	case EViewportLayout::LeftRight:
 	{
 		const uint32 LeftWidth = SafeWidth / 2;
 		const uint32 RightWidth = SafeWidth - LeftWidth;
-		Rects.push_back({ 0, 0, LeftWidth, SafeHeight });
-		Rects.push_back({ static_cast<int32>(LeftWidth), 0, RightWidth, SafeHeight });
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX), static_cast<float>(LayoutOriginY), static_cast<float>(LeftWidth), static_cast<float>(SafeHeight)));
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX + static_cast<int32>(LeftWidth)), static_cast<float>(LayoutOriginY), static_cast<float>(RightWidth), static_cast<float>(SafeHeight)));
 		break;
 	}
 	case EViewportLayout::TopBottom:
 	{
 		const uint32 TopHeight = SafeHeight / 2;
 		const uint32 BottomHeight = SafeHeight - TopHeight;
-		Rects.push_back({ 0, 0, SafeWidth, TopHeight });
-		Rects.push_back({ 0, static_cast<int32>(TopHeight), SafeWidth, BottomHeight });
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX), static_cast<float>(LayoutOriginY), static_cast<float>(SafeWidth), static_cast<float>(TopHeight)));
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX), static_cast<float>(LayoutOriginY + static_cast<int32>(TopHeight)), static_cast<float>(SafeWidth), static_cast<float>(BottomHeight)));
 		break;
 	}
 	case EViewportLayout::Quad:
@@ -339,10 +334,10 @@ void FEngine::UpdateViewportLayout(int32 Width, int32 Height)
 		const uint32 RightWidth = SafeWidth - LeftWidth;
 		const uint32 TopHeight = SafeHeight / 2;
 		const uint32 BottomHeight = SafeHeight - TopHeight;
-		Rects.push_back({ 0, 0, LeftWidth, TopHeight });
-		Rects.push_back({ 0, static_cast<int32>(TopHeight), LeftWidth, BottomHeight });
-		Rects.push_back({ static_cast<int32>(LeftWidth), 0, RightWidth, TopHeight });
-		Rects.push_back({ static_cast<int32>(LeftWidth), static_cast<int32>(TopHeight), RightWidth, BottomHeight });
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX), static_cast<float>(LayoutOriginY), static_cast<float>(LeftWidth), static_cast<float>(TopHeight)));
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX), static_cast<float>(LayoutOriginY + static_cast<int32>(TopHeight)), static_cast<float>(LeftWidth), static_cast<float>(BottomHeight)));
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX + static_cast<int32>(LeftWidth)), static_cast<float>(LayoutOriginY), static_cast<float>(RightWidth), static_cast<float>(TopHeight)));
+		Rects.push_back(FRect(static_cast<float>(LayoutOriginX + static_cast<int32>(LeftWidth)), static_cast<float>(LayoutOriginY + static_cast<int32>(TopHeight)), static_cast<float>(RightWidth), static_cast<float>(BottomHeight)));
 		break;
 	}
 	}
@@ -350,18 +345,12 @@ void FEngine::UpdateViewportLayout(int32 Width, int32 Height)
 	const size_t ViewportCount = (std::min)(Viewports.size(), Rects.size());
 	for (size_t Index = 0; Index < ViewportCount; ++Index)
 	{
-		Viewports[Index].ApplyLayout(
-			LayoutOriginX + Rects[Index].X,
-			LayoutOriginY + Rects[Index].Y,
-			Rects[Index].Width,
-			Rects[Index].Height,
-			Rects[Index].X,
-			Rects[Index].Y);
+		Viewports[Index].ApplyLayout(Rects[Index]);
 	}
 
 	for (size_t Index = ViewportCount; Index < Viewports.size(); ++Index)
 	{
-		Viewports[Index].ApplyLayout(0, 0, 0, 0, 0, 0);
+		Viewports[Index].ApplyLayout(FRect(0.0f, 0.0f, 0.0f, 0.0f));
 	}
 }
 
@@ -457,8 +446,17 @@ FViewportContext* FEngine::GetInputOwnerViewportContext() const
 
 FViewportContext FEngine::CreateViewportContext(size_t Index)
 {
-	FViewportContext Context(std::make_unique<FViewport>(0, 0, 0, 0), CreateViewportClient());
+	std::unique_ptr<FViewportClient> ViewportClient = CreateViewportClient();
+	FViewportContext Context(std::make_unique<FViewport>(FRect(0.0f, 0.0f, 0.0f, 0.0f), ViewportClient.get()), std::move(ViewportClient));
 	ConfigureViewportContext(Index, Context);
+	return Context;
+}
+
+FViewportContext* FEngine::CreateViewportContext(FRect InRect)
+{
+	std::unique_ptr<FViewportClient> ViewportClient = CreateViewportClient();
+	FViewportContext* Context = new FViewportContext(std::make_unique<FViewport>(InRect, ViewportClient.get()), std::move(ViewportClient));
+	Context->Initialize(Core.get(), InputManager, EnhancedInput);
 	return Context;
 }
 

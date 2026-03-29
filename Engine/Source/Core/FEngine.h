@@ -6,6 +6,8 @@
 #include "Core/ViewportContext.h"
 #include "ViewportClient.h"
 #include <memory>
+#include "Widget/WindowManager.h"
+#include "Widget/ViewportWindow.h"
 
 class FWindowApplication;
 class FWindow;
@@ -71,8 +73,11 @@ protected:
 	uint32 ViewportLayoutHeight = 0;
 	bool bHasCustomViewportLayoutBounds = false;
 
+	FWindowManager WindowManager;
+
 private:
 	FViewportContext CreateViewportContext(size_t Index);
+	FViewportContext* CreateViewportContext(FRect InRect);
 	void InitializeViewportContexts(size_t Count);
 	void CleanupViewportContexts();
 	void SetActiveViewportContext(FViewportContext* InViewportContext);

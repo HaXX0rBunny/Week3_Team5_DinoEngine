@@ -32,6 +32,10 @@ FViewportContext::FViewportContext(std::unique_ptr<FViewport> InViewport, std::u
 	: Viewport(std::move(InViewport))
 	, ViewportClient(std::move(InViewportClient))
 {
+	if (ViewportClient)
+	{
+		ViewportClient->SetViewport(Viewport.get());
+	}
 }
 
 FViewportContext::FViewportContext(FViewportContext&& Other) noexcept = default;
@@ -103,32 +107,23 @@ void FViewportContext::SetCapturing(bool bInCapturing)
 	bCapturing = bInCapturing && AcceptsInput();
 }
 
-void FViewportContext::ApplyLayout(int32 InTopLeftX, int32 InTopLeftY, uint32 InWidth, uint32 InHeight, int32 InRenderTopLeftX, int32 InRenderTopLeftY)
+void FViewportContext::ApplyLayout(const FRect& InRect)
 {
-	SetRect(InTopLeftX, InTopLeftY, InWidth, InHeight);
-	SetRenderOffset(InRenderTopLeftX, InRenderTopLeftY);
-	SetEnabled(InWidth > 0 && InHeight > 0);
+	SetRect(InRect);
+	SetEnabled(InRect.Size.X > 0.0f && InRect.Size.Y > 0.0f);
 }
 
-void FViewportContext::SetRect(int32 InTopLeftX, int32 InTopLeftY, uint32 InWidth, uint32 InHeight)
+void FViewportContext::SetRect(FRect InRect)
 {
 	if (!Viewport)
 	{
 		return;
 	}
 
-	Viewport->SetRect(InTopLeftX, InTopLeftY, InWidth, InHeight);
+	Viewport->SetRect(InRect);
 	if (ViewportClient)
 	{
-		ViewportClient->SetViewportRect(InTopLeftX, InTopLeftY, static_cast<int32>(InWidth), static_cast<int32>(InHeight));
-	}
-}
-
-void FViewportContext::SetRenderOffset(int32 InRenderTopLeftX, int32 InRenderTopLeftY)
-{
-	if (Viewport)
-	{
-		Viewport->SetRenderOffset(InRenderTopLeftX, InRenderTopLeftY);
+		ViewportClient->SetViewportRect(InRect);
 	}
 }
 
@@ -196,7 +191,7 @@ bool FViewportContext::HandleMessage(FCore* Core, HWND Hwnd, UINT Msg, WPARAM WP
 
 		if (bHasLocalMousePosition)
 		{
-			ViewportClient->SetViewportInputState(LocalMouseX, LocalMouseY, ViewWidth, ViewHeight);
+			ViewportClient->SetViewportInputState(LocalMouseX, LocalMouseY, Viewport->GetRect());
 		}
 	}
 

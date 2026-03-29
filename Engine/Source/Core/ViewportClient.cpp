@@ -50,24 +50,24 @@ void FViewportClient::ProcessCameraInput(FCore* Core, float DeltaTime)
 	(void)DeltaTime;
 }
 
-void FViewportClient::SetViewportRect(int32 InTopLeftX, int32 InTopLeftY, int32 InWidth, int32 InHeight)
+void FViewportClient::SetViewportRect(const FRect& InRect)
 {
-	ViewportTopLeftX = InTopLeftX;
-	ViewportTopLeftY = InTopLeftY;
-	ViewportWidth = InWidth;
-	ViewportHeight = InHeight;
+	ViewportTopLeftX = static_cast<int32>(InRect.Position.X);
+	ViewportTopLeftY = static_cast<int32>(InRect.Position.Y);
+	ViewportWidth = static_cast<int32>(InRect.Size.X);
+	ViewportHeight = static_cast<int32>(InRect.Size.Y);
+
 	if (ViewportWidth > 0 && ViewportHeight > 0)
 	{
 		CameraTransform.SetAspectRatio(static_cast<float>(ViewportWidth) / static_cast<float>(ViewportHeight));
 	}
 }
 
-void FViewportClient::SetViewportInputState(int32 InMouseX, int32 InMouseY, int32 InWidth, int32 InHeight)
+void FViewportClient::SetViewportInputState(int32 InMouseX, int32 InMouseY, const FRect& InRect)
 {
 	ViewportMouseX = InMouseX;
 	ViewportMouseY = InMouseY;
-	ViewportWidth = InWidth;
-	ViewportHeight = InHeight;
+	SetViewportRect(InRect);
 }
 
 void FViewportClient::SetWorldType(ELevelType InWorldType)
@@ -129,14 +129,6 @@ void FViewportClient::PostRender(FCore* Core, FRenderer* Renderer)
 {
 	(void)Core;
 	(void)Renderer;
-}
-
-void FViewportClient::HandleFileDoubleClick(const FString& FilePath)
-{
-}
-
-void FViewportClient::HandleFileDropOnViewport(const FString& FilePath)
-{
 }
 
 void FGameViewportClient::Attach(FCore* Core)

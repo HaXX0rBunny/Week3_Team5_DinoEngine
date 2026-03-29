@@ -11,6 +11,7 @@ public:
 	FRect(const FPoint& InPosition, const FPoint& InSize)
 		: Position(InPosition), Size(InSize) {}
 
+	bool ContainsPoint(const FPoint& Point) const;
 
 	FPoint Position;
 	FPoint Size;

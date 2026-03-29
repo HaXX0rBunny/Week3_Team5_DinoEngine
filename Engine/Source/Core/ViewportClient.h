@@ -11,6 +11,7 @@
 #include "Camera/Camera.h"
 #include "Input/InputAction.h"
 #include "Input/EnhancedInputManager.h"
+#include "Math/Rect.h"
 
 class FCore;
 class FRenderer;
@@ -20,6 +21,7 @@ class UPrimitiveComponent;
 struct FRenderCommandQueue;
 class UWorld;
 struct FInputMappingContext;
+class FViewport;
 
 class ENGINE_API FViewportClient
 {
@@ -37,8 +39,6 @@ public:
 	const FShowFlags& GetShowFlags() const { return ShowFlags; }
 	virtual void BuildRenderCommands(TArray<AActor*>& InActors, FRenderCommandQueue& OutQueue);
 	virtual void PostRender(FCore* Core, FRenderer* Renderer);
-	virtual void HandleFileDoubleClick(const FString& FilePath);
-	virtual void HandleFileDropOnViewport(const FString& FilePath);
 	FCamera* GetCamera() { return &CameraTransform; }
 
 	virtual void Initialize(FInputManager* InInput, FEnhancedInputManager* InEnhancedInput);
@@ -46,17 +46,11 @@ public:
 	virtual void ProcessCameraInput(FCore* Core, float DeltaTime);
 	virtual void Cleanup();
 	virtual void Tick(float DeltaTime);
-	virtual void SetViewportRect(int32 InTopLeftX, int32 InTopLeftY, int32 InWidth, int32 InHeight);
-	virtual void SetViewportInputState(int32 InMouseX, int32 InMouseY, int32 InWidth, int32 InHeight);
+	virtual void SetViewportRect(const FRect& InRect);
+	virtual void SetViewportInputState(int32 InMouseX, int32 InMouseY, const FRect& InRect);
 	void SetWorldType(ELevelType InWorldType);
 	ELevelType GetWorldType() const;
-
-	int32 GetViewportTopLeftX() const { return ViewportTopLeftX; }
-	int32 GetViewportTopLeftY() const { return ViewportTopLeftY; }
-	int32 GetViewportWidth() const { return ViewportWidth; }
-	int32 GetViewportHeight() const { return ViewportHeight; }
-	int32 GetViewportMouseX() const { return ViewportMouseX; }
-	int32 GetViewportMouseY() const { return ViewportMouseY; }
+	void SetViewport(FViewport* InViewport) { Viewport = InViewport; }
 
 protected:
 	FCamera CameraTransform;
@@ -80,6 +74,9 @@ protected:
 	int32 ViewportMouseX = 0;
 	int32 ViewportMouseY = 0;
 	ELevelType WorldType = ELevelType::Game;
+
+private:
+	FViewport* Viewport = nullptr;
 };
 
 class ENGINE_API FGameViewportClient : public FViewportClient

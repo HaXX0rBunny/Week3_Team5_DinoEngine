@@ -45,8 +45,8 @@ public:
 	EEditorViewportType GetViewportType() const { return ViewportType; }
 	bool SupportsEditingTools() const { return WorldType == ELevelType::Editor; }
 
-	void HandleFileDoubleClick(const FString& FilePath) override;
-	void HandleFileDropOnViewport(const FString& FilePath) override;
+	void HandleFileDoubleClick(const FString& FilePath);
+	void HandleFileDropOnViewport(const FString& FilePath);
 	void BuildRenderCommands(TArray<AActor*>& InActors, FRenderCommandQueue& OutQueue) override;
 	void PostRender(FCore* Core, FRenderer* Renderer) override;
 	void ProcessCameraInput(FCore* Core, float DeltaTime) override;

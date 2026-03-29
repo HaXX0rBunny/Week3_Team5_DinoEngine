@@ -318,6 +318,7 @@
     <ClCompile Include="Source\Widget\SWindow.cpp" />
     <ClCompile Include="Source\Widget\WindowManager.cpp" />
     <ClCompile Include="Source\Widget\ViewportWindow.cpp" />
+    <ClCompile Include="Source\Math\Rect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CoreMinimal.h">

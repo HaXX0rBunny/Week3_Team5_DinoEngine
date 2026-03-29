@@ -12,5 +12,6 @@ public:
 	SViewportWindow(FViewportContext* InViewportContext);
 	virtual ~SViewportWindow();
 	virtual void Draw() override;
+	virtual void OnResize() override;
 };
 
