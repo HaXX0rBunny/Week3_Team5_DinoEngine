@@ -10,7 +10,9 @@ public:
 	~FWindowManager();
 	SWindow* GetWindowAtPoint(const FPoint& Point) const;
 	bool TryDeleteWindow(SWindow* Window);
+	void CheckParent();
 	void DrawWindows() const;
+	void Tick(float deltaTime);
 
 	template <typename T, typename... Args>
 	T* CreateSWindow(Args&&... args)
