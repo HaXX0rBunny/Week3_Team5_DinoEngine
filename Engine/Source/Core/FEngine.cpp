@@ -87,7 +87,6 @@ bool FEngine::Initialize(HINSTANCE hInstance, const wchar_t* Title, int32 Width,
 	InputManager = new FInputManager();
 	EnhancedInput = new FEnhancedInputManager();
 
-	//InitializeViewportContexts(4);
 	
 	WindowManager.CreateSWindow<SViewportWindow>(CreateViewportContext({ {100, 100}, {100, 100} }));
 	ViewportLayoutOriginX = 0;

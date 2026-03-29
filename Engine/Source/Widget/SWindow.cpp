@@ -22,10 +22,56 @@ SWindow* SWindow::GetWindow(FPoint coord)
 	return nullptr;
 }
 
+SSplitter* SWindow::Split(SWindow* InNewWindow, SplitDirection InDirection, SplitOption InSplitOption)
+{
+	SSplitter* NewSplitter = nullptr;
+
+	if (InDirection == SplitDirection::Horizontal)
+	{
+		NewSplitter = new SSplitterH();
+	}
+	else if (InDirection == SplitDirection::Vertical)
+	{
+		NewSplitter = new SSplitterV();
+	}
+
+	if (!NewSplitter)
+		return nullptr;
+
+	if (InSplitOption == SplitOption::LT)
+	{
+		NewSplitter->SetSideLT(this);
+		NewSplitter->SetSideRB(InNewWindow);
+	}
+	else if (InSplitOption == SplitOption::RB)
+	{
+		NewSplitter->SetSideLT(InNewWindow);
+		NewSplitter->SetSideRB(this);
+	}
+	NewSplitter->SetParent(Parent);
+	return NewSplitter;
+}
+
+void SSplitter::SetSideLT(SWindow* InSideLT)
+{
+	SideLT = InSideLT;
+	if (InSideLT)
+		InSideLT->SetParent(this);
+}
+
+void SSplitter::SetSideRB(SWindow* InSideRB)
+{
+	SideRB = InSideRB;
+	if (InSideRB)
+		InSideRB->SetParent(this);
+}
+
 SSplitter::SSplitter(SWindow* InSideLT, SWindow* InSideRB, float InSplitRatio)
 	: SideLT(InSideLT), SideRB(InSideRB), SplitRatio(InSplitRatio)
 {
 	SetSplitRatio(InSplitRatio);
+	SetSideLT(InSideLT);
+	SetSideRB(InSideRB);
 }
 
 SSplitter::~SSplitter()
@@ -69,6 +115,7 @@ void SSplitter::SetSplitRatio(float InSplitRatio)
 	{
 		SplitRatio = InSplitRatio;
 	}
+	OnResize();
 }
 
 void SSplitter::Draw()
@@ -77,22 +124,17 @@ void SSplitter::Draw()
 	SideRB->Draw();
 }
 
-void SSplitterH::SetSplitRatio(float InSplitRatio)
+void SSplitterH::OnResize()
 {
-	SSplitter::SetSplitRatio(InSplitRatio);
-
 	float LTWidth = Rect.Size.X * SplitRatio;
 	float RBWidth = Rect.Size.X - LTWidth;
 
 	SideLT->SetRect({ Rect.Position, { LTWidth, Rect.Size.Y } });
 	SideRB->SetRect({ { Rect.Position.X + LTWidth, Rect.Position.Y }, { RBWidth, Rect.Size.Y } });
-
 }
 
-void SSplitterV::SetSplitRatio(float InSplitRatio)
+void SSplitterV::OnResize()
 {
-	SSplitter::SetSplitRatio(InSplitRatio);
-
 	float LTHeight = Rect.Size.Y * SplitRatio;
 	float RBHeight = Rect.Size.Y - LTHeight;
 
