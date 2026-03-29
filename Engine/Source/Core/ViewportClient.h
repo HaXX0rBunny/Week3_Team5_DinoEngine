@@ -50,7 +50,6 @@ public:
 	virtual void SetViewportInputState(int32 InMouseX, int32 InMouseY, const FRect& InRect);
 	void SetWorldType(ELevelType InWorldType);
 	ELevelType GetWorldType() const;
-	void SetViewport(FViewport* InViewport) { Viewport = InViewport; }
 
 protected:
 	FCamera CameraTransform;
@@ -74,9 +73,6 @@ protected:
 	int32 ViewportMouseX = 0;
 	int32 ViewportMouseY = 0;
 	ELevelType WorldType = ELevelType::Game;
-
-private:
-	FViewport* Viewport = nullptr;
 };
 
 class ENGINE_API FGameViewportClient : public FViewportClient

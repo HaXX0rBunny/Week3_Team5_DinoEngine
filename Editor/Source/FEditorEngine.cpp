@@ -63,37 +63,11 @@ void FEditorEngine::PostInitialize()
 	EditorUI.SetupWindow(MainWindow);
 	EditorUI.AttachToRenderer();
 
-	RefreshEditorViewportClients();
 	UE_LOG("EditorEngine initialized");
 }
 
-void FEditorEngine::Tick(float DeltaTime)
-{
-	FEngine::Tick(DeltaTime);
-}
 
-void FEditorEngine::Render()
+FViewportClient* FEditorEngine::CreateViewportClient()
 {
-	FEngine::Render();
-}
-
-std::unique_ptr<FViewportClient> FEditorEngine::CreateViewportClient()
-{
-	return std::make_unique<FEditorViewportClient>(EditorUI, MainWindow, EEditorViewportType::Perspective, ELevelType::Editor);
-}
-
-void FEditorEngine::OnActiveViewportContextChanged(FViewportContext* NewActiveContext, FViewportContext* PreviousActiveContext)
-{
-	(void)PreviousActiveContext;
-	EditorUI.SetActiveViewportClient(ResolveEditorViewportClient(NewActiveContext));
-}
-
-void FEditorEngine::RefreshEditorViewportClients()
-{
-	EditorUI.SetActiveViewportClient(ResolveEditorViewportClient(GetActiveViewportContext()));
-}
-
-FEditorViewportClient* FEditorEngine::ResolveEditorViewportClient(FViewportContext* ViewportContext) const
-{
-	return ViewportContext ? dynamic_cast<FEditorViewportClient*>(ViewportContext->GetViewportClient()) : nullptr;
+	return new FEditorViewportClient(EditorUI, MainWindow, EEditorViewportType::Perspective, ELevelType::Editor);
 }

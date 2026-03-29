@@ -1,8 +1,8 @@
 #include "ViewportWindow.h"
 #include "Core/FEngine.h"
 
-SViewportWindow::SViewportWindow(std::unique_ptr<FViewportContext> InViewportContext)
-	: ViewportContext(std::move(InViewportContext))
+SViewportWindow::SViewportWindow(FViewportContext* InViewportContext)
+	: ViewportContext(InViewportContext)
 {
 }
 
@@ -12,6 +12,7 @@ SViewportWindow::~SViewportWindow()
 	{
 		ViewportContext->Cleanup();
 	}
+	delete ViewportContext;
 }
 
 void SViewportWindow::Tick(float DeltaTime)

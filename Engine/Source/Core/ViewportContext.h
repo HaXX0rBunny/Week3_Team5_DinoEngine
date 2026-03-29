@@ -12,15 +12,15 @@ struct FRenderCommandQueue;
 
 struct ENGINE_API FViewportContext
 {
-	std::unique_ptr<FViewport> Viewport;
-	std::unique_ptr<FViewportClient> ViewportClient;
+	FViewport* Viewport;
+	FViewportClient* ViewportClient;
 	bool bEnabled = true;
 	bool bAcceptsInput = true;
 	bool bActive = false;
 	bool bCapturing = false;
 
 	FViewportContext();
-	FViewportContext(std::unique_ptr<FViewport> InViewport, std::unique_ptr<FViewportClient> InViewportClient);
+	FViewportContext(FViewport* InViewport, FViewportClient* InViewportClient);
 	FViewportContext(FViewportContext&& Other) noexcept;
 	FViewportContext& operator=(FViewportContext&& Other) noexcept;
 	~FViewportContext();

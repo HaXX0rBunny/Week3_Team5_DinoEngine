@@ -1,10 +1,9 @@
 #include "Viewport.h"
 #include "Core/ViewportClient.h"
 
-FViewport::FViewport(FRect InRect, FViewportClient* InViewportClient)
+FViewport::FViewport(FRect InRect)
 {
 	SetRect(InRect);
-	ViewportClient = InViewportClient;
 }
 
 FViewport::~FViewport() = default;

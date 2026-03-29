@@ -15,15 +15,8 @@ public:
 protected:
 	void PreInitialize() override;
 	void PostInitialize() override;
-	void Tick(float DeltaTime) override;
-	void Render() override;
 	ELevelType GetStartupLevelType() const override { return ELevelType::Editor; }
-	std::unique_ptr<FViewportClient> CreateViewportClient() override;
-	void OnActiveViewportContextChanged(FViewportContext* NewActiveContext, FViewportContext* PreviousActiveContext) override;
-
-private:
-	void RefreshEditorViewportClients();
-	FEditorViewportClient* ResolveEditorViewportClient(FViewportContext* ViewportContext) const;
+	FViewportClient* CreateViewportClient() override;
 
 	FEditorUI EditorUI;
 };

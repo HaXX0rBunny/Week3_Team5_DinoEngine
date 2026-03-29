@@ -28,21 +28,28 @@ namespace
 
 FViewportContext::FViewportContext() = default;
 
-FViewportContext::FViewportContext(std::unique_ptr<FViewport> InViewport, std::unique_ptr<FViewportClient> InViewportClient)
-	: Viewport(std::move(InViewport))
-	, ViewportClient(std::move(InViewportClient))
+FViewportContext::FViewportContext(FViewport* InViewport, FViewportClient* InViewportClient)
+	: Viewport(InViewport)
+	, ViewportClient(InViewportClient)
 {
-	if (ViewportClient)
-	{
-		ViewportClient->SetViewport(Viewport.get());
-	}
 }
 
 FViewportContext::FViewportContext(FViewportContext&& Other) noexcept = default;
 
 FViewportContext& FViewportContext::operator=(FViewportContext&& Other) noexcept = default;
 
-FViewportContext::~FViewportContext() = default;
+FViewportContext::~FViewportContext() 
+{
+	if(ViewportClient)
+	{
+		delete ViewportClient;
+	}
+
+	if (Viewport)
+	{
+		delete Viewport;
+	}
+}
 
 bool FViewportContext::IsValid() const
 {
@@ -81,16 +88,6 @@ void FViewportContext::SetAcceptsInput(bool bInAcceptsInput)
 	{
 		SetActive(false);
 	}
-}
-
-FViewport* FViewportContext::GetViewport() const
-{
-	return Viewport.get();
-}
-
-FViewportClient* FViewportContext::GetViewportClient() const
-{
-	return ViewportClient.get();
 }
 
 void FViewportContext::SetActive(bool bInActive)

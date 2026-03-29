@@ -8,7 +8,7 @@ class FViewportClient;
 class ENGINE_API FViewport
 {
 public:
-	FViewport(FRect InRect, FViewportClient* InViewportClient);
+	FViewport(FRect InRect);
 	virtual ~FViewport();
 
 	bool GetMousePositionInViewport(int32 WindowMouseX, int32 WindowMouseY, int32& OutViewportX, int32& OutViewportY, int32& OutWidth, int32& OutHeight) const;
@@ -35,7 +35,6 @@ private:
 	//int32 RenderTopLeftX = 0;
 	//int32 RenderTopLeftY = 0;
 	FRect ViewportRect;
-	FViewportClient* ViewportClient = nullptr;
 	bool bHovered = false;
 	bool bFocused = false;
 	bool bVisible = false;

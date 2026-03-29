@@ -6,13 +6,12 @@
 
 class ENGINE_API SViewportWindow : public SWindow
 {
-	std::unique_ptr<FViewportContext> ViewportContext;
+	FViewportContext* ViewportContext;
 
 public:
-	explicit SViewportWindow(std::unique_ptr<FViewportContext> InViewportContext);
+	explicit SViewportWindow(FViewportContext* InViewportContext);
 	~SViewportWindow() override;
 
-	FViewportContext* GetViewportContext() const { return ViewportContext.get(); }
 	virtual void Tick(float DeltaTime) override;
 	virtual void Draw() override;
 	virtual void OnResize() override;

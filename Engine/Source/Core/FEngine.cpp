@@ -2,6 +2,7 @@
 #include "Platform/Windows/Window.h"
 #include "Platform/Windows/WindowApplication.h"
 #include "Object/ObjectGlobals.h"
+#include "Math/Rect.h"
 
 FEngine* GEngine = nullptr;
 
@@ -41,28 +42,24 @@ bool FEngine::Initialize(HINSTANCE hInstance, const wchar_t* Title, int32 Width,
 	InputManager = new FInputManager();
 	EnhancedInput = new FEnhancedInputManager();
 	WindowManager.Initialize(InputManager, EnhancedInput);
-	WindowManager.CreateViewportWindow(
-		Core.get(),
-		CreateViewportClient(),
-		FRect(
-			0.0f,
-			0.0f,
-			static_cast<float>((std::max)(MainWindow->GetWidth(), 0)),
-			static_cast<float>((std::max)(MainWindow->GetHeight(), 0))));
-
+	WindowManager.CreateSWindow<SViewportWindow>(CreateContext(FRect(0.0f, 0.0f, static_cast<float>(MainWindow->GetWidth()), static_cast<float>(MainWindow->GetHeight()))));
 	PostInitialize();
-
-	WindowManager.SetOnActiveViewportContextChanged(
-		[this](FViewportContext* NewActiveContext, FViewportContext* PreviousActiveContext)
-		{
-			OnActiveViewportContextChanged(NewActiveContext, PreviousActiveContext);
-		});
 
 	App->AddMessageFilter(std::bind(&FEngine::OnInput, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 	App->SetOnResizeCallback(std::bind(&FEngine::OnResize, this, std::placeholders::_1, std::placeholders::_2));
 	App->ShowWindow();
 
 	return true;
+}
+
+FViewportContext* FEngine::CreateContext(FRect InRect)
+{
+	auto ViewportClient = CreateViewportClient();
+	auto Viewport = new FViewport(InRect);
+	
+	FViewportContext* ViewportContext = new FViewportContext(Viewport, ViewportClient);
+	ViewportContext->Initialize(Core.get(), InputManager, EnhancedInput);
+	return ViewportContext;
 }
 
 void FEngine::Run()
@@ -120,8 +117,6 @@ void FEngine::Input(float DeltaTime)
 	{
 		EnhancedInput->ProcessInput(InputManager, DeltaTime);
 	}
-
-	WindowManager.ProcessCameraInput(Core.get(), DeltaTime);
 }
 
 void FEngine::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
@@ -130,18 +125,11 @@ void FEngine::ProcessInput(HWND Hwnd, UINT Msg, WPARAM WParam, LPARAM LParam)
 	{
 		InputManager->ProcessMessage(Hwnd, Msg, WParam, LParam);
 	}
-
-	WindowManager.HandleMessage(Core.get(), MainWindow ? MainWindow->GetHwnd() : nullptr, Hwnd, Msg, WParam, LParam);
 }
 
 void FEngine::Tick(float DeltaTime)
 {
 	WindowManager.Tick(DeltaTime);
-}
-
-std::unique_ptr<FViewportClient> FEngine::CreateViewportClient()
-{
-	return std::make_unique<FGameViewportClient>();
 }
 
 void FEngine::Shutdown()
