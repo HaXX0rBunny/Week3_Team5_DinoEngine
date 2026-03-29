@@ -59,9 +59,6 @@ void FViewportLegacy::Render(HWND Hwnd)
 	const bool bOpen = ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 	if (!bOpen)
 	{
-		bHovered = false;
-		bFocused = false;
-		bVisible = false;
 		if (GRenderer)
 		{
 			GRenderer->ClearLevelRenderTarget();
@@ -101,17 +98,11 @@ void FViewportLegacy::Render(HWND Hwnd)
 		ImGui::EndMenuBar();
 	}
 
-	bFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-	bHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
-
-	const ImVec2 ContentPos = ImGui::GetCursorScreenPos();
 	const ImVec2 ContentSize = ImGui::GetContentRegionAvail();
 	const uint32 NewWidth = ContentSize.x > 1.0f ? static_cast<uint32>(ContentSize.x) : 0;
 	const uint32 NewHeight = ContentSize.y > 1.0f ? static_cast<uint32>(ContentSize.y) : 0;
 
-	bVisible = (NewWidth > 0 && NewHeight > 0);
-
-	if (!bVisible)
+	if (NewWidth == 0 || NewHeight == 0)
 	{
 		ReleaseLevelView();
 		if (GRenderer)
@@ -180,50 +171,6 @@ void FViewportLegacy::ReleaseLevelView()
 
 	OffscreenWidth = 0;
 	OffscreenHeight = 0;
-}
-
-bool FViewportLegacy::GetMousePositionInViewport(int32 WindowMouseX, int32 WindowMouseY, int32& OutViewportX, int32& OutViewportY, int32& OutWidth, int32& OutHeight) const
-{
-	if (!bVisible || OffscreenWidth == 0 || OffscreenHeight == 0)
-	{
-		return false;
-	}
-
-	if (WindowMouseX < 0 || WindowMouseY < 0)
-	{
-		return false;
-	}
-
-	const int32 LocalX = WindowMouseX;
-	const int32 LocalY = WindowMouseY;
-	if (LocalX < 0 || LocalY < 0 || LocalX >= static_cast<int32>(OffscreenWidth) || LocalY >= static_cast<int32>(OffscreenHeight))
-	{
-		return false;
-	}
-
-	OutViewportX = LocalX;
-	OutViewportY = LocalY;
-	OutWidth = static_cast<int32>(OffscreenWidth);
-	OutHeight = static_cast<int32>(OffscreenHeight);
-	return true;
-}
-
-bool FViewportLegacy::GetContentRect(int32& OutClientPosX, int32& OutClientPosY, uint32& OutWidth, uint32& OutHeight) const
-{
-	if (!bVisible || OffscreenWidth == 0 || OffscreenHeight == 0)
-	{
-		OutClientPosX = 0;
-		OutClientPosY = 0;
-		OutWidth = 0;
-		OutHeight = 0;
-		return false;
-	}
-
-	OutClientPosX = 0;
-	OutClientPosY = 0;
-	OutWidth = OffscreenWidth;
-	OutHeight = OffscreenHeight;
-	return true;
 }
 
 void FViewportLegacy::ReadyLevelView(ID3D11Device* Device, uint32 Width, uint32 Height)

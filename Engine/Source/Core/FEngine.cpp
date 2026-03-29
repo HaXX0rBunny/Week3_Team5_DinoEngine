@@ -4,7 +4,7 @@
 #include "Object/ObjectGlobals.h"
 #include "Math/Rect.h"
 
-ENGINE_API FEngine* GEngine = nullptr;
+FEngine* GEngine = nullptr;
 
 FEngine::~FEngine()
 {

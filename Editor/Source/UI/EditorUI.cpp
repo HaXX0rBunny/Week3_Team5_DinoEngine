@@ -493,15 +493,15 @@ void FEditorUI::Render()
 	ImGui::PopStyleVar();
 	ImGui::End();
 
-	ViewportLegacy.Render(MainWindow ? MainWindow->GetHwnd() : nullptr);
+	//ViewportLegacy.Render(MainWindow ? MainWindow->GetHwnd() : nullptr);
 	int32 ViewportClientPosX = 0;
 	int32 ViewportClientPosY = 0;
 	uint32 ViewportWidth = 0;
 	uint32 ViewportHeight = 0;
 	if (GEngine)
 	{
-		ViewportLegacy.GetContentRect(ViewportClientPosX, ViewportClientPosY, ViewportWidth, ViewportHeight);
-		GEngine->SetViewportLayoutBounds(ViewportClientPosX, ViewportClientPosY, ViewportWidth, ViewportHeight);
+		//ViewportLegacy.GetContentRect(ViewportClientPosX, ViewportClientPosY, ViewportWidth, ViewportHeight);
+		//GEngine->SetViewportLayoutBounds(ViewportClientPosX, ViewportClientPosY, ViewportWidth, ViewportHeight);
 	}
 
 	if (Core)
